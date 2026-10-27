@@ -14,12 +14,14 @@ const tete=(titre,lead,retour)=>`${retour?`<a class="retour" href="${retour}">�
 /* ======================= accueil ======================= */
 function accueil(main){
   const cartes=[
-    ["guidee","Procédure guidée","Consigne la pompe P2 étape par étape : séparation, condamnation, identification, VAT, MALT-CC, puis déconsignation.","Pas à pas"],
-    ["erreurs","Mode erreurs","Ordre libre. Une fois les travaux lancés, un opérateur et un essai du groupe électrogène mettent ta consignation à l'épreuve.","Mise à l'épreuve"],
+    ["guidee","Pompe secourue · procédure guidée","Consigne la pompe P2 étape par étape : séparation, condamnation, identification, VAT, MALT-CC, puis déconsignation.","Électrique · pas à pas"],
+    ["erreurs","Pompe secourue · mode erreurs","Ordre libre. Une fois les travaux lancés, un opérateur et un essai du groupe électrogène mettent ta consignation à l'épreuve.","Électrique · mise à l'épreuve"],
+    ["presse-guidee","Presse hydraulique · procédure guidée","Intervenir sous l'outil : béquille, séparation électrique et hydraulique, purge de l'accumulateur et du vérin, vérification, puis remise en service.","Fluides et mécanique · pas à pas"],
+    ["presse-erreurs","Presse hydraulique · mode erreurs","Ordre libre. Un redémarrage, un levier manœuvré sur un accumulateur encore chargé et un clapet qui fuit testent ta consignation.","Fluides et mécanique · mise à l'épreuve"],
     ["roles","Rôles et habilitations","Qui consigne, qui dirige les travaux, que signifient B0, B2, BC, BR… avec un quiz de sept questions.","NF C 18-510"],
     ["fluides","Consignation des fluides","Vannes, purges, joint plein : comment isoler une conduite sous pression, avec un schéma interactif.","INRS ED 6109"]
   ];
-  main.innerHTML=tete("Consigner en sécurité","Avant de travailler sur un équipement, on le met en sécurité de façon sûre et vérifiée : c'est la consignation. Ici, la NF C 18-510 appliquée à une pompe secourue par un groupe électrogène, et les principes pour les fluides.")+`</div>
+  main.innerHTML=tete("Consigner en sécurité","Avant de travailler sur un équipement, on le met en sécurité de façon sûre et vérifiée : c'est la consignation. Ici, la NF C 18-510 appliquée à une pompe secourue par un groupe électrogène, et la consignation de toutes les énergies d'une presse hydraulique.")+`</div>
     <div class="niveaux">${cartes.map(([id,t,r,n])=>`<a class="niveau" href="#/consignation/${id}"><span class="num">${esc(n)}</span><h2>${esc(t)}</h2><p class="lead" style="margin:0">${esc(r)}</p><span style="font-weight:600;color:var(--brand-text);font-size:14px">Ouvrir →</span></a>`).join("")}</div>
     <p class="astuce" style="margin-top:16px">Références : NF C 18-510 (2012, amendements A1 de 2020 et A2 de 2023) ; INRS ED 6109 « Consignations et déconsignations », 3e édition, 2020. Ces activités entraînent au raisonnement : elles ne remplacent ni la formation à l'habilitation, ni la procédure de ton entreprise.</p>`;
   return ()=>{};

@@ -150,7 +150,7 @@ async def main():
         async def dernier():
             return (await pg.inner_text("#journal")).split("\n")[0].lower()
         await pg.goto(BASE + "#/consignation"); await pg.wait_for_timeout(300)
-        verifie(await pg.locator(".niveau").count() == 4, "quatre activités de consignation")
+        verifie(await pg.locator(".niveau").count() == 6, "six activités de consignation")
         await pg.goto(BASE + "#/consignation/guidee"); await pg.wait_for_timeout(400)
         await k("man:Q1")
         verifie("pompe p1" in await dernier(), "guidée : Q1 refusé, ce n'est pas l'ouvrage")
@@ -190,6 +190,36 @@ async def main():
         await pg.locator("#recommencer").click(); await pg.wait_for_timeout(200)
         await k("malt")
         verifie("arc électrique" in await dernier(), "erreurs : MALT-CC posée sous tension, arc électrique")
+
+        print("Consignation de la presse hydraulique")
+        await pg.goto(BASE + "#/consignation/presse-guidee"); await pg.wait_for_timeout(400)
+        await k("vp")
+        verifie("mise en sécurité" in await dernier(), "presse guidée : purger avant la béquille est refusé")
+        for key in ["beq", "pompe", "qm", "v0", "cad:qm", "cad:v0"]:
+            await k(key)
+        await k("vd"); await pg.wait_for_timeout(1100); await k("vp"); await pg.wait_for_timeout(500)
+        for key in ["cad:vd", "cad:vp", "verif", "essaiDem", "essaiLev", "att:B2"]:
+            await k(key)
+        verifie("sans énergie" in await etat(pg), "presse guidée : plus aucune énergie après dissipation")
+        await capture(pg, "presse-guidee")
+        await k("travaux"); await pg.wait_for_timeout(7000)
+        jj = (await pg.inner_text("#journal")).lower()
+        verifie("écrasement" not in jj and "rien ne démarre" in jj, "presse guidée : journée sans incident")
+        for key in ["avis", "cad:vd", "cad:vp", "vd", "vp", "cad:qm", "cad:v0", "qm", "v0", "pompe"]:
+            await k(key); await pg.wait_for_timeout(80)
+        await pg.locator('[data-lev="0"]').hover(); await pg.mouse.down(); await pg.wait_for_timeout(800); await pg.mouse.up(); await pg.wait_for_timeout(200)
+        await k("beq")
+        verifie("terminée" in (await pg.inner_text("#consigne")).lower(), "presse guidée : déconsignation complète")
+        await pg.goto(BASE + "#/consignation/presse-erreurs"); await pg.wait_for_timeout(400)
+        for key in ["pompe", "qm", "v0", "cad:qm", "cad:v0", "att:B2"]:
+            await k(key)
+        await k("travaux"); await pg.wait_for_timeout(7500)
+        verifie("accident" in (await pg.inner_text("#docs")).lower() and "accumulateur" in (await pg.inner_text("#journal")).lower(), "presse erreurs : accumulateur non purgé, l'outil descend")
+        await pg.locator("#recommencer").click(); await pg.wait_for_timeout(200)
+        for key in ["beq", "pompe", "qm", "v0", "cad:qm", "cad:v0", "att:B2"]:
+            await k(key)
+        await k("travaux"); await pg.wait_for_timeout(7500)
+        verifie("sur la béquille" in (await pg.inner_text("#journal")).lower() and "accident" not in (await pg.inner_text("#docs")).lower(), "presse erreurs : la béquille arrête l'outil")
 
         await pg.goto(BASE + "#/consignation/roles"); await pg.wait_for_timeout(300)
         for _ in range(7):
@@ -282,7 +312,7 @@ async def main():
 
         print("Largeur téléphone (360 px)")
         await pg.set_viewport_size({"width": 360, "height": 780})
-        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/fluidique", "#/fluidique/double-effet", "#/fluidique/hydraulique", "#/depannage", "#/depannage/s3", "#/consignation", "#/consignation/guidee", "#/consignation/erreurs", "#/consignation/roles", "#/consignation/fluides", "#/infos"]:
+        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/fluidique", "#/fluidique/double-effet", "#/fluidique/hydraulique", "#/depannage", "#/depannage/s3", "#/consignation", "#/consignation/guidee", "#/consignation/erreurs", "#/consignation/roles", "#/consignation/fluides", "#/consignation/presse-guidee", "#/infos"]:
             await pg.goto(BASE + route); await pg.wait_for_timeout(300)
             deborde = await pg.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
             verifie(not deborde, f"pas de défilement horizontal sur {route}")

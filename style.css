@@ -348,6 +348,9 @@ main{flex:1;width:100%;max-width:1440px;margin:0 auto;padding-block:22px 40px;
 .fluide .fl-t.gras{font-weight:700;font-size:13px}
 .fluide .on{stroke:var(--neutre);stroke-width:2.6}
 .fluide .ouvert line,.fluide .ouvert polygon{stroke:var(--neutre);fill:var(--neutre)}
+.fluide .fl-vanne{fill:var(--paper);stroke:var(--sch-ink);stroke-width:1.7}
+.fluide .fl-vanne.fermee{fill:var(--sch-ink)}
+.fluide .fl-beq{fill:var(--accent-soft);stroke:var(--accent-text);stroke-width:1.6}
 .reglage{display:grid;gap:4px;font-size:13px}
 .reglage span{display:flex;justify-content:space-between;gap:8px}
 .reglage input{width:100%;accent-color:var(--primary)}

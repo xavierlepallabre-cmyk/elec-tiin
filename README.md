@@ -4,7 +4,7 @@ Simulateurs de schémas électriques pour les apprentis du **Bac Pro TIIN** — 
 
 Application statique, installable sur tablette et utilisable hors connexion, sur le même principe que Nucléa TIIN et Sûreté & Cycle TIIN : HTML, CSS et JavaScript natifs, sans framework, sans compte, sans serveur, sans aucune note ni historique.
 
-## Contenu de la version 1.5
+## Contenu de la version 1.6
 
 **Atelier** — trois simulateurs :
 - Démarrage direct un sens (disjoncteur-moteur, transformateur 400 V / 24 V, sectionneur général cadenassable) ;
@@ -19,10 +19,11 @@ Dans chaque simulateur : les fils sous tension passent en rouge, le neutre et le
 
 **Dépannage** — seize pannes cachées dans les trois schémas (contact usé ou oxydé, bobine coupée, pôle hors service, contacts soudés, voyant grillé, contact temporisé défaillant). L'apprenti observe le symptôme, mesure au multimètre virtuel (tension sous tension, résistance hors tension, refus de l'ohmmètre sur un circuit alimenté), fait maintenir un bouton par un collègue, puis désigne l'élément défaillant. Les contacts sont dessinés dans l'état de leur appareil : la panne ne se voit qu'à la mesure. Pannes décrites dans `js/depannage-data.js`.
 
-**Consignation** — scénario de remplacement du moteur d'une pompe secourue par un groupe électrogène, selon la NF C 18-510 (2012 + A1 2020 + A2 2023) :
+**Consignation** — pompe secourue par un groupe électrogène selon la NF C 18-510 (2012 + A1 2020 + A2 2023), et presse hydraulique selon l'INRS ED 6109 :
 - *procédure guidée* : séparation de toutes les sources, condamnation, identification, VAT avec autotest avant et après la mesure, MALT-CC, attestation de consignation, puis avis de fin de travail et déconsignation dans le bon ordre ;
 - *mode erreurs* : ordre libre, puis une journée de travail met la consignation à l'épreuve (opérateur qui veut refermer, essai du groupe électrogène) avec un bilan étape par étape ;
 - *rôles et habilitations* : circuit des documents, rôles BC, B2, B1, BR, B0, lecture des symboles, quiz ;
+- *presse hydraulique* (procédure guidée et mode erreurs) : intervention sous l'outil en position haute ; béquille de sécurité, séparation électrique (sectionneur du moteur de pompe) et hydraulique (vanne d'isolement), purge de l'accumulateur et de la chambre du vérin, condamnation des purges ouvertes, vérification (manomètres, essai de démarrage, essai du levier), déconsignation avec reprise de la charge avant le retrait de la béquille ;
 - *fluides* : les quatre opérations et les niveaux d'isolement de l'INRS ED 6109 (3e éd., 2020), avec une conduite interactive (fuite de vanne, purge, joint plein, tronçon démonté).
 
 **Symboles** — imagier de 23 symboles IEC 60617 (lettre repère, bornes, fonction) et jeu de reconnaissance par séries de dix questions, sans enregistrement du résultat.
@@ -47,12 +48,13 @@ elec-tiin/
 │   ├── depannage.js         diagnostic et multimètre virtuel
 │   ├── consignation-data.js scénario, rôles, quiz et fluides de la Consignation
 │   ├── consignation.js      procédure guidée, mode erreurs, rôles, fluides
+│   ├── consignation-fluides.js consignation de la presse hydraulique
 │   ├── app.js               navigation, thème, mises à jour
 │   └── schemas/             ★ un fichier par schéma (voir AJOUTER-UN-SCHEMA.md)
 ├── assets/                  police Lexend (licence OFL) et logo du lycée
 ├── icons/                   icônes de l'application installée
 ├── tools/version.py         met à jour le numéro de cache avant publication
-└── tests/test_app.py        92 vérifications dans un vrai navigateur
+└── tests/test_app.py        99 vérifications dans un vrai navigateur
 ```
 
 ## Publier sur GitHub Pages

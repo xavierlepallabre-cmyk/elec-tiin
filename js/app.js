@@ -1,7 +1,7 @@
 /* Élec TIIN — navigation, thème, état réseau, mises à jour. */
 (function(){
 "use strict";
-const VERSION="1.5.0";
+const VERSION="1.6.0";
 const main=document.getElementById("main");
 let quitter=()=>{};
 
@@ -60,7 +60,8 @@ function route(){
     if(onglet==="fluidique")quitter=h[1]?window.ElecFluidique.ouvrir(main,h[1]):window.ElecFluidique.liste(main);
     else if(onglet==="depannage")quitter=h[1]?window.ElecDepannage.ouvrir(main,h[1]):window.ElecDepannage.liste(main);
     else if(onglet==="consignation"){const C=window.ElecConsignation;
-      quitter=h[1]==="guidee"||h[1]==="erreurs"?C.scene(main,h[1]):h[1]==="roles"?C.roles(main):h[1]==="fluides"?C.fluides(main):C.accueil(main);}
+      quitter=h[1]==="presse-guidee"||h[1]==="presse-erreurs"?window.ElecConsFluides.scene(main,h[1]==="presse-guidee"?"guidee":"erreurs"):
+        h[1]==="guidee"||h[1]==="erreurs"?C.scene(main,h[1]):h[1]==="roles"?C.roles(main):h[1]==="fluides"?C.fluides(main):C.accueil(main);}
     else if(onglet==="defis")quitter=h[1]?window.ElecDefis.ouvrir(main,+h[1]):window.ElecDefis.liste(main);
     else if(onglet==="symboles")quitter=h[1]==="jeu"?window.ElecSymboles.jeu(main):window.ElecSymboles.imagier(main);
     else if(onglet==="infos")quitter=infos();
