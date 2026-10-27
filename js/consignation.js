@@ -120,12 +120,12 @@ function scene(main,mode){
      permis:k=>k==="cad:Q2"||k==="cad:Q3"},
     {t:"Identification",c:"Va au lieu de travail et vérifie que l'équipement devant toi est bien celui que tu as consigné : touche le moteur M2.",ok:()=>st.ident===true,
      permis:k=>k==="ident"},
-    {t:"Vérification d'absence de tension",c:"Teste le VAT sur une source connue, vérifie l'absence de tension aux bornes de M2, puis reteste le VAT.",
+    {t:"Vérification d'absence de tension",c:"Lance l'autotest du VAT, vérifie l'absence de tension aux bornes de M2, puis relance l'autotest.",
      ok:()=>st.vat.testAvant&&st.vat.mesure&&st.vat.mesure.fiable&&!st.vat.mesure.reel&&st.vat.testApres,
      permis:k=>{
        if(k==="vat:piles")return true;
        if(k==="vat:test")return true;
-       if(k==="vat:mesure")return st.vat.testAvant?true:"Avant de mesurer, teste le VAT sur une source connue : un VAT en panne afficherait « absence de tension » même sous tension.";
+       if(k==="vat:mesure")return st.vat.testAvant?true:"Avant de mesurer, lance l'autotest du VAT : un VAT en panne afficherait « absence de tension » même sous tension.";
        return null;}},
     {t:"Mise à la terre et en court-circuit",c:"Pose la MALT-CC aux bornes de M2, tout de suite après la VAT. Elle protège en cas de retour de tension.",ok:()=>sim.app.MALT.ferme,
      permis:k=>k==="malt"},
@@ -189,11 +189,11 @@ function scene(main,mode){
   }
   function vat(arg){
     const v=st.vat;
-    if(arg==="piles"){v.ok=true;v.echecTest=false;v.testAvant=false;note("Piles remplacées. Reteste le VAT sur la source connue avant de t'en servir.","");return;}
+    if(arg==="piles"){v.ok=true;v.echecTest=false;v.testAvant=false;note("Piles remplacées. Relance l'autotest avant de t'en servir.","");return;}
     if(arg==="test"){
-      if(!v.ok){v.echecTest=true;note("Sur la source connue, le VAT reste éteint : il est hors service. Ne l'utilise pas, remplace ses piles.","ko");return;}
-      if(v.mesure&&v.testAvant){v.testApres=true;note("Le VAT s'allume toujours sur la source connue : la mesure faite entre les deux tests est fiable.","ok");}
-      else {v.testAvant=true;note("Le VAT s'allume sur la source connue : il fonctionne. Tu peux mesurer aux bornes de M2.","ok");}
+      if(!v.ok){v.echecTest=true;note("Autotest du VAT : échec, le voyant de test ne s'allume pas. Le VAT est hors service : ne l'utilise pas, remplace ses piles.","ko");return;}
+      if(v.mesure&&v.testAvant){v.testApres=true;note("Autotest réussi après la mesure : le VAT fonctionnait pendant la vérification, la mesure est fiable.","ok");}
+      else {v.testAvant=true;note("Autotest réussi : le VAT fonctionne. Tu peux mesurer aux bornes de M2.","ok");}
       return;
     }
     if(arg==="mesure"){
@@ -204,9 +204,9 @@ function scene(main,mode){
       const reel=vif.some(x=>x);
       v.mesure={lecture:lect,reel,fiable:v.ok&&v.testAvant,affiche:lect.some(x=>x[1])};
       v.testApres=false;
-      if(!v.ok)note("Le VAT n'indique aucune tension… mais il n'a pas été testé et il est en panne : cette mesure ne prouve rien.","ko");
+      if(!v.ok)note("Le VAT n'indique aucune tension… mais aucun autotest n'a été fait et il est en panne : cette mesure ne prouve rien.","ko");
       else if(reel)note("Le VAT indique une tension aux bornes de M2 : l'équipement n'est pas consigné. Ne touche à rien !","ko");
-      else note(v.testAvant?"Absence de tension sur les six mesures. Reteste le VAT pour confirmer qu'il fonctionnait.":"Absence de tension… mais le VAT n'a pas été testé avant : la mesure n'est pas fiable.",v.testAvant?"ok":"ko");
+      else note(v.testAvant?"Absence de tension sur les six mesures. Relance l'autotest pour confirmer que le VAT fonctionnait.":"Absence de tension… mais l'autotest n'a pas été fait avant : la mesure n'est pas fiable.",v.testAvant?"ok":"ko");
     }
   }
   function malt(){
@@ -277,7 +277,7 @@ function scene(main,mode){
       ["Séparation de toutes les sources (Q2 et Q3)",st.sepOk,st.sepOk?"":"M2 a deux sources : le réseau normal par Q2 et le groupe électrogène par Q3. Les deux doivent être ouvertes."],
       ["Condamnation en position ouverte",st.cadOk,st.cadOk?"":"Sans cadenas, n'importe qui peut refermer l'appareil sans savoir qu'on travaille en aval."],
       ["Identification au lieu de travail",st.ident===true,st.ident===true?"":"Il faut vérifier, devant l'équipement, que c'est bien celui qui a été consigné (plaque, repère du câble)."],
-      ["VAT testé, mesure fiable, VAT retesté",st.vatOk,st.vatOk?"":"Le VAT se teste sur une source connue avant et après la mesure. Un VAT en panne indique toujours « absence de tension »."],
+      ["Autotest du VAT, mesure, autotest à nouveau",st.vatOk,st.vatOk?"":"On lance l'autotest intégré du VAT avant et après la mesure. Un VAT en panne indique toujours « absence de tension »."],
       ["MALT-CC posée après la VAT",st.maltValide,st.maltValide?"":(st.arc?"Posée sous tension : c'est un court-circuit direct devant soi.":"La MALT-CC protège en cas de retour de tension. Elle se pose juste après une VAT qui confirme l'absence de tension.")],
       ["Attestation remise au chargé de travaux (B2)",st.attest==="B2",st.attest==="B2"?"":"L'attestation de consignation pour travaux va au chargé de travaux, qui autorise ensuite son équipe."]
     ];
@@ -317,7 +317,7 @@ function scene(main,mode){
     main.querySelector("#lieuActions").innerHTML=`
       <button type="button" class="btn" data-k="ident">Identifier l'équipement (moteur M2)</button>
       <div class="sous-bloc"><span class="sous-titre">Vérificateur d'absence de tension (VAT)</span>
-        <button type="button" class="btn" data-k="vat:test">Tester le VAT sur une source connue</button>
+        <button type="button" class="btn" data-k="vat:test">Lancer l'autotest du VAT</button>
         ${v.echecTest?`<button type="button" class="btn btn-danger" data-k="vat:piles">Remplacer les piles du VAT</button>`:""}
         <button type="button" class="btn" data-k="vat:mesure">Mesurer aux bornes de M2</button></div>
       <button type="button" class="btn" data-k="malt">${sim.app.MALT.ferme?"Retirer la MALT-CC":"Poser la MALT-CC aux bornes de M2"}</button>`;

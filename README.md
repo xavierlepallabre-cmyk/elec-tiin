@@ -16,7 +16,7 @@ Dans chaque simulateur : les fils sous tension passent en rouge, le neutre et le
 **Défis** — schémas à trous en cinq niveaux : sur le démarrage direct (l'auto-maintien ; arrêter et protéger ; NO ou NF ?), sur les deux sens de marche (le verrouillage électrique) et sur l'étoile-triangle (les contacts temporisés). L'apprenti place les pièces, puis lance un test automatique animé : la simulation joue le résultat, même faux (contacteur qui bat, moteur qui démarre seul, moteur grillé faute de protection, court-circuit faute de verrouillage, pas de passage en triangle), et explique pourquoi. Aucun résultat n'est enregistré. Les niveaux se décrivent dans `js/defis-data.js`.
 
 **Consignation** — scénario de remplacement du moteur d'une pompe secourue par un groupe électrogène, selon la NF C 18-510 (2012 + A1 2020 + A2 2023) :
-- *procédure guidée* : séparation de toutes les sources, condamnation, identification, VAT testée avant et après, MALT-CC, attestation de consignation, puis avis de fin de travail et déconsignation dans le bon ordre ;
+- *procédure guidée* : séparation de toutes les sources, condamnation, identification, VAT avec autotest avant et après la mesure, MALT-CC, attestation de consignation, puis avis de fin de travail et déconsignation dans le bon ordre ;
 - *mode erreurs* : ordre libre, puis une journée de travail met la consignation à l'épreuve (opérateur qui veut refermer, essai du groupe électrogène) avec un bilan étape par étape ;
 - *rôles et habilitations* : circuit des documents, rôles BC, B2, B1, BR, B0, lecture des symboles, quiz ;
 - *fluides* : les quatre opérations et les niveaux d'isolement de l'INRS ED 6109 (3e éd., 2020), avec une conduite interactive (fuite de vanne, purge, joint plein, tronçon démonté).

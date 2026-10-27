@@ -158,9 +158,9 @@ async def main():
         verifie("deuxième source" in await dernier(), "guidée : condamner avant d'ouvrir Q3 est refusé")
         await k("man:Q3"); await k("cad:Q2"); await k("cad:Q3"); await k("ident")
         await k("vat:test")
-        verifie("hors service" in await dernier(), "guidée : le test révèle un VAT en panne")
+        verifie("hors service" in await dernier(), "guidée : l'autotest révèle un VAT en panne")
         await k("vat:mesure")
-        verifie("teste le vat" in await dernier(), "guidée : mesure refusée sans VAT testé")
+        verifie("autotest" in await dernier(), "guidée : mesure refusée sans autotest du VAT")
         for key in ["vat:piles", "vat:test", "vat:mesure", "vat:test", "malt", "att:B2"]:
             await k(key)
         verifie("consigné" in await etat(pg), "guidée : M2 consigné et à la terre")
