@@ -329,6 +329,29 @@ main{flex:1;width:100%;max-width:1440px;margin:0 auto;padding-block:22px 40px;
 .mm-journal b{white-space:nowrap}
 .select{width:100%;padding:10px;border-radius:var(--r-md);border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
 
+/* ---------- fluidique ---------- */
+.fluide .fl-ligne{fill:none;stroke:var(--mort);stroke-width:2.4;stroke-linejoin:round;transition:stroke .15s}
+.fluide .fl-pilote{fill:none;stroke:var(--mort);stroke-width:1.6;stroke-dasharray:6 4}
+.fluide .fl-pilote-fixe{fill:none;stroke:var(--sch-ink);stroke-width:1.4;stroke-dasharray:5 4}
+.fluide .fl-jonc{fill:var(--mort)}
+.fluide .fl-s{fill:none;stroke:var(--sch-ink);stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+.fluide .fl-s.fond,.fluide .fond{fill:var(--paper)}
+.fluide .fl-plein{fill:var(--sch-ink);stroke:none}
+.fluide .fl-cadre{fill:none;stroke:var(--sch-muted);stroke-width:1.2;stroke-dasharray:4 3}
+.fluide .fl-chambre{stroke:none;transition:fill .2s}
+.fluide .fl-piston{fill:var(--sch-ink)}
+.fluide .fl-tige{fill:var(--paper);stroke:var(--sch-ink);stroke-width:1.6}
+.fluide .fl-charge{fill:var(--accent-soft);stroke:var(--accent-text);stroke-width:1.6}
+.fluide .fl-t{font-family:var(--font);font-size:12px;fill:var(--sch-ink)}
+.fluide .fl-t.petit{font-size:10.5px;fill:var(--sch-muted)}
+.fluide .fl-t.mini{font-size:9px;fill:var(--sch-muted)}
+.fluide .fl-t.gras{font-weight:700;font-size:13px}
+.fluide .on{stroke:var(--neutre);stroke-width:2.6}
+.fluide .ouvert line,.fluide .ouvert polygon{stroke:var(--neutre);fill:var(--neutre)}
+.reglage{display:grid;gap:4px;font-size:13px}
+.reglage span{display:flex;justify-content:space-between;gap:8px}
+.reglage input{width:100%;accent-color:var(--primary)}
+
 /* ---------- symboles ---------- */
 .filtres{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
 .filtres button{border:1px solid var(--line);background:var(--surface);padding:7px 13px;border-radius:var(--r-pill);font-weight:600;font-size:13px;color:var(--muted);cursor:pointer}

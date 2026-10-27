@@ -4,7 +4,7 @@ Simulateurs de schémas électriques pour les apprentis du **Bac Pro TIIN** — 
 
 Application statique, installable sur tablette et utilisable hors connexion, sur le même principe que Nucléa TIIN et Sûreté & Cycle TIIN : HTML, CSS et JavaScript natifs, sans framework, sans compte, sans serveur, sans aucune note ni historique.
 
-## Contenu de la version 1.4
+## Contenu de la version 1.5
 
 **Atelier** — trois simulateurs :
 - Démarrage direct un sens (disjoncteur-moteur, transformateur 400 V / 24 V, sectionneur général cadenassable) ;
@@ -12,6 +12,8 @@ Application statique, installable sur tablette et utilisable hors connexion, sur
 - Démarrage étoile-triangle (temporisation de KM2 visible, couplage détecté).
 
 Dans chaque simulateur : les fils sous tension passent en rouge, le neutre et le 0 V en bleu ; on manœuvre les appareils sur le schéma ou au pupitre ; on simule une surcharge ; une option repère les phases L1, L2, L3 par couleur ; un cadre explique chaque étape.
+
+**Fluidique** — quatre simulateurs en symboles ISO 1219-1 (repérage des orifices ISO 5599) : vérin simple effet et distributeur 3/2 ; vérin double effet, distributeur 5/2 monostable et réducteurs de débit unidirectionnels (vitesse réglée à l'échappement) ; distributeur 5/2 bistable et effet mémoire ; centrale hydraulique avec limiteur de pression réglable, distributeur 4/3 à centre fermé et clapet anti-retour piloté qui maintient une charge (pression piégée, dérive sans clapet, chute de la charge). Vanne de sectionnement avec mise à l'échappement sur les circuits pneumatiques.
 
 **Défis** — schémas à trous en cinq niveaux : sur le démarrage direct (l'auto-maintien ; arrêter et protéger ; NO ou NF ?), sur les deux sens de marche (le verrouillage électrique) et sur l'étoile-triangle (les contacts temporisés). L'apprenti place les pièces, puis lance un test automatique animé : la simulation joue le résultat, même faux (contacteur qui bat, moteur qui démarre seul, moteur grillé faute de protection, court-circuit faute de verrouillage, pas de passage en triangle), et explique pourquoi. Aucun résultat n'est enregistré. Les niveaux se décrivent dans `js/defis-data.js`.
 
@@ -38,6 +40,9 @@ elec-tiin/
 │   ├── symboles.js          imagier et jeu
 │   ├── defis-data.js        niveaux, emplacements et pièces des Défis
 │   ├── defis.js             schéma à trous et test automatique
+│   ├── fluidique-dessin.js  symboles pneumatiques et hydrauliques (ISO 1219-1)
+│   ├── fluidique-data.js    circuits de la Fluidique
+│   ├── fluidique.js         simulateur fluidique
 │   ├── depannage-data.js    pannes, résistances et méthode du Dépannage
 │   ├── depannage.js         diagnostic et multimètre virtuel
 │   ├── consignation-data.js scénario, rôles, quiz et fluides de la Consignation
@@ -47,7 +52,7 @@ elec-tiin/
 ├── assets/                  police Lexend (licence OFL) et logo du lycée
 ├── icons/                   icônes de l'application installée
 ├── tools/version.py         met à jour le numéro de cache avant publication
-└── tests/test_app.py        78 vérifications dans un vrai navigateur
+└── tests/test_app.py        92 vérifications dans un vrai navigateur
 ```
 
 ## Publier sur GitHub Pages
