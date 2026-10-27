@@ -33,8 +33,17 @@ class Simulation{
   }
   maintenant(){return performance.now()/1000;}
 
+  /* ---------- pannes (mode Dépannage) ---------- */
+  // pannes = {ouverts:[id contact], fermes:[id contact], coupees:[id récepteur]}
+  definirPannes(p){this.pannes={ouverts:new Set(p&&p.ouverts||[]),fermes:new Set(p&&p.fermes||[]),coupees:new Set(p&&p.coupees||[])};return this.resoudre();}
+
   /* ---------- état d'un contact ---------- */
   ferme(c){
+    if(this.pannes){if(this.pannes.ouverts.has(c.id))return false;if(this.pannes.fermes.has(c.id))return true;}
+    return this.fermeNominal(c);
+  }
+  // état « vu de l'extérieur » : celui de l'appareil, sans tenir compte d'une panne cachée
+  fermeNominal(c){
     const a=this.app[c.app]; if(!a)throw new Error("Appareil inconnu : "+c.app);
     const m=c.mode||"no";
     switch(a.type){
@@ -106,7 +115,7 @@ class Simulation{
       const nouv={};
       for(const ch of sch.charges){
         const a=srcComp[trouve(ch.a)]||[],b=srcComp[trouve(ch.b)]||[];
-        nouv[ch.id]=a.length>0&&b.length>0&&a.some(x=>b.every(y=>y.nom!==x.nom));
+        nouv[ch.id]=!(this.pannes&&this.pannes.coupees.has(ch.id))&&a.length>0&&b.length>0&&a.some(x=>b.every(y=>y.nom!==x.nom));
       }
       // contacteurs et temporisations
       let change=false; const t=this.maintenant(); this.echeance=null;
