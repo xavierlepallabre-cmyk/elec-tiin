@@ -12,7 +12,7 @@ window.ELEC_DEPANNAGE={
   methode:[
     ["Constater","Fais fonctionner l'installation et observe précisément le symptôme : qu'est-ce qui marche, qu'est-ce qui ne marche pas ?"],
     ["Délimiter","Puissance ou commande ? Quel contacteur ou quel récepteur ne réagit pas ? Lis le schéma pour isoler la zone en cause."],
-    ["Mesurer","Sous tension, au voltmètre : un contact fermé affiche 0 V, un contact ouvert dans un circuit alimenté affiche la tension du circuit. Hors tension, à l'ohmmètre : continuité ou circuit ouvert (OL)."],
+    ["Mesurer","Sous tension, au voltmètre : un contact fermé affiche 0 V ; un contact ouvert affiche la tension du circuit si son aval est relié à l'autre polarité par un récepteur. Si l'aval n'est relié à rien, la valeur est instable (tension fantôme) : mesure plutôt entre phases en amont et en aval. Hors tension, à l'ohmmètre : continuité ou circuit ouvert (OL)."],
     ["Conclure","Désigne l'élément défaillant. Remplacer une pièce saine coûte du temps et de l'argent : n'accuse un élément qu'après l'avoir mesuré."]
   ],
   pannes:[

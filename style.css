@@ -318,6 +318,8 @@ main{flex:1;width:100%;max-width:1440px;margin:0 auto;padding-block:22px 40px;
 .mm-ecran{font:700 30px/1 "Courier New",ui-monospace,monospace;letter-spacing:.04em;text-align:right;padding:14px 16px;border-radius:var(--r-md);
   background:#C9D6B8;color:#14210E;border:3px solid #2A3326;font-variant-numeric:tabular-nums}
 .mm-ecran.refuse{background:#F4C7C3;color:#7A0E0E}
+.mm-ecran.instable{color:#6B5A10;background:#E3D9A6}
+.mm-journal li.instable{background:var(--accent-soft)}
 .mm-pointes{display:grid;gap:4px;font-size:13px}
 .mm-pointes span{display:flex;align-items:center;gap:8px}
 .pt{width:12px;height:12px;border-radius:50%;flex:none}.pt.rouge{background:#D21F1F}.pt.noire{background:#1B2740;border:1px solid var(--muted)}

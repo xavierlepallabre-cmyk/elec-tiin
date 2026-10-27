@@ -175,7 +175,10 @@ function ouvrir(main,pid){
   }
   function tension(a,b){
     const pa=potentiel(a.net),pb=potentiel(b.net);
-    if(!pa.length||!pb.length)return 0;
+    // une pointe sur un conducteur relié au réseau, l'autre sur un conducteur « en l'air »
+    // (aval d'un pôle ouvert, sans récepteur raccordé) : le multimètre affiche une tension fantôme
+    if(!pa.length!==!pb.length)return "flottant";
+    if(!pa.length)return 0;
     const na=pa.map(s=>s.nom),nb=pb.map(s=>s.nom);
     if(na.some(n=>nb.includes(n)))return 0;
     const x=na[0],y=nb[0],tbt=n=>n==="24V"||n==="0V";
@@ -210,7 +213,10 @@ function ouvrir(main,pid){
   }
   function mesurer(){
     const a=mm.rouge,b=mm.noire;let txt,cls="";
-    if(mm.mode==="V"){txt=fmtV(tension(a,b));}
+    if(mm.mode==="V"){const v=tension(a,b);
+      if(v==="flottant"){txt=(3+Math.random()*30).toFixed(1).replace(".",",")+" V ?";cls="instable";
+        note("Valeur instable : une pointe est sur un conducteur relié au réseau, l'autre sur un conducteur isolé de toute source (aval d'un appareil ouvert, rien ne le relie à une autre polarité). Le multimètre affiche une tension fantôme sans signification. Pour un sectionneur, mesure entre phases en amont, puis en aval. Pour un contact de commande, fais maintenir le bouton qui ferme le circuit.");}
+      else txt=fmtV(v);}
     else{const r=resistance(a,b);
       if(r===null){txt="Refusé";cls="ko";
         note("Mesure de résistance sur un circuit sous tension : interdit. Tu risques l'électrisation et la destruction de l'appareil. Coupe l'alimentation de ce circuit d'abord.");}
@@ -266,6 +272,7 @@ function ouvrir(main,pid){
     else{e.dataset.s="arret";e.textContent="Moteur à l'arrêt";}
     main.querySelector("#ecran").textContent=mm.rouge&&mm.noire?mm.affiche:"— — —";
     main.querySelector("#ecran").classList.toggle("refuse",mm.affiche==="Refusé"&&!!mm.noire);
+    main.querySelector("#ecran").classList.toggle("instable",/\?$/.test(mm.affiche||"")&&!!mm.noire);
     main.querySelector("#pRouge").textContent=mm.rouge?mm.rouge.lab:"—";
     main.querySelector("#pNoire").textContent=mm.noire?mm.noire.lab:"—";
     main.querySelector("#mmJournal").innerHTML=mm.journal.map(([t,v,c])=>`<li${c?` class="${c}"`:""}><span>${esc(t)}</span><b>${esc(v)}</b></li>`).join("");
