@@ -103,4 +103,18 @@ Prérequis des tests : `pip install playwright` puis `python -m playwright insta
 
 Conception originale : Xavier Le Pallabre  
 Ressource pédagogique développée à titre personnel, avec l’assistance d’outils d’intelligence artificielle.  
-© 2026 Xavier Le Pallabre — Attribution de l’auteur original à conserver lors des réutilisations et adaptations, conformément à la licence applicable.
+© 2026 Xavier Le Pallabre — Attribution de l’auteur original à conserver lors des réutilisations et adaptations, conformément à la licence applicable : [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr).
+
+## Licence
+
+Sauf mention contraire, le contenu de ce dépôt (code, textes, schémas, illustrations) est mis à disposition selon les termes de la licence **Creative Commons Attribution – Pas d'utilisation commerciale – Partage dans les mêmes conditions 4.0 International** ([CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr)). Texte complet : fichier `LICENSE`.
+
+Tu peux le réutiliser, le copier et l'adapter, à trois conditions :
+- **Attribution** : citer l'auteur original (Xavier Le Pallabre), indiquer la licence et signaler les modifications ;
+- **Pas d'utilisation commerciale** : pas de vente ni d'usage dans un service payant ;
+- **Partage dans les mêmes conditions** : diffuser les adaptations sous la même licence.
+
+Ne sont pas couverts par cette licence :
+- la police Lexend (`assets/fonts/`), sous licence SIL Open Font License 1.1 (voir `assets/fonts/OFL.txt`) ;
+- le logo du lycée Alexis de Tocqueville, propriété de l'établissement ;
+- les normes citées (IEC, NF, INRS), qui restent la propriété de leurs éditeurs : l'application les résume sans les reproduire.
