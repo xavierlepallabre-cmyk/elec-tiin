@@ -98,3 +98,9 @@ Prérequis des tests : `pip install playwright` puis `python -m playwright insta
 - Simulation « tout ou rien » : aucun calcul de courant, de chute de tension ni d'échauffement. La surcharge est déclenchée par un bouton.
 - Un court-circuit (deux sources reliées sans récepteur) fait déclencher l'appareil de protection désigné dans le schéma.
 - Les contacteurs changent d'état instantanément ; seules les temporisations ont une durée.
+
+## Auteur et droits
+
+Conception originale : Xavier Le Pallabre  
+Ressource pédagogique développée à titre personnel, avec l’assistance d’outils d’intelligence artificielle.  
+© 2026 Xavier Le Pallabre — Attribution de l’auteur original à conserver lors des réutilisations et adaptations, conformément à la licence applicable.

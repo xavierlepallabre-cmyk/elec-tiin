@@ -1,7 +1,7 @@
 /* Élec TIIN — navigation, thème, état réseau, mises à jour. */
 (function(){
 "use strict";
-const VERSION="1.7.0";
+const VERSION="1.7.1";
 const main=document.getElementById("main");
 let quitter=()=>{};
 
@@ -35,8 +35,8 @@ function infos(){
         <p>Version ${VERSION}. L'application fonctionne hors connexion après la première ouverture.</p>
         <div class="actions"><button type="button" class="btn" id="checkUpdate">Rechercher une mise à jour</button></div>
         <p id="updateStatus" class="astuce" aria-live="polite"></p></section>
-      <section class="bloc"><h2>Crédits</h2>
-        <p>Conception pédagogique : Xavier Le Pallabre, Bac Pro TIIN. Police Lexend, licence SIL Open Font License (assets/fonts/OFL.txt).</p></section>
+      <section class="bloc"><h2>Auteur et droits</h2>
+        <p>Conception originale : Xavier Le Pallabre</p><p>Ressource pédagogique développée à titre personnel, avec l’assistance d’outils d’intelligence artificielle.</p><p>© 2026 Xavier Le Pallabre — Attribution de l’auteur original à conserver lors des réutilisations et adaptations, conformément à la licence applicable.</p><p>Police Lexend, licence SIL Open Font License (assets/fonts/OFL.txt).</p></section>
     </div>`;
   const b=document.getElementById("checkUpdate");
   b.addEventListener("click",()=>{

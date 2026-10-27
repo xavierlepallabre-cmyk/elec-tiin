@@ -1,6 +1,6 @@
 /* Élec TIIN — fonctionnement hors connexion.
    Changer CACHE à chaque publication (tools/version.py le fait automatiquement). */
-const CACHE='elec-tiin-262338868e';
+const CACHE='elec-tiin-4db4216ff5';
 const ASSETS=['./','./index.html','./style.css','./icon.svg','./manifest.webmanifest',
  './assets/fonts/lexend.css','./assets/fonts/lexend-0.ttf','./assets/fonts/lexend-1.ttf','./assets/fonts/lexend-2.ttf','./assets/fonts/lexend-3.ttf',
  './assets/logo-tocqueville.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png',
