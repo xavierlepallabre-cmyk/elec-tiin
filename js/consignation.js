@@ -7,7 +7,7 @@ const D=window.ElecDessin;
 const C=()=>window.ELEC_CONSIGNATION;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const melange=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-const tete=(titre,lead,retour)=>`${retour?`<a class="retour" href="${retour}">← Consignation</a>`:""}
+const tete=(titre,lead,retour)=>`${retour?`<a class="retour" href="${retour}">← Sécurité</a>`:""}
   <div class="page-head"><div>${retour?"":`<p class="tag"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>Consignation</p>`}
   <h1>${esc(titre)}</h1>${lead?`<p class="lead">${lead}</p>`:""}</div>`;
 
@@ -21,9 +21,20 @@ function accueil(main){
     ["roles","Rôles et habilitations","Qui consigne, qui dirige les travaux, que signifient B0, B2, BC, BR… avec un quiz de sept questions.","NF C 18-510"],
     ["fluides","Consignation des fluides","Vannes, purges, joint plein : comment isoler une conduite sous pression, avec un schéma interactif.","INRS ED 6109"]
   ];
-  main.innerHTML=tete("Consigner en sécurité","Avant de travailler sur un équipement, on le met en sécurité de façon sûre et vérifiée : c'est la consignation. Ici, la NF C 18-510 appliquée à une pompe secourue par un groupe électrogène, et la consignation de toutes les énergies d'une presse hydraulique.")+`</div>
-    <div class="niveaux">${cartes.map(([id,t,r,n])=>`<a class="niveau" href="#/consignation/${id}"><span class="num">${esc(n)}</span><h2>${esc(t)}</h2><p class="lead" style="margin:0">${esc(r)}</p><span style="font-weight:600;color:var(--brand-text);font-size:14px">Ouvrir →</span></a>`).join("")}</div>
-    <p class="astuce" style="margin-top:16px">Références : NF C 18-510 (2012, amendements A1 de 2020 et A2 de 2023) ; INRS ED 6109 « Consignations et déconsignations », 3e édition, 2020. Ces activités entraînent au raisonnement : elles ne remplacent ni la formation à l'habilitation, ni la procédure de ton entreprise.</p>`;
+  const proteger=[
+    ["ddr","Le disjoncteur différentiel","Défaut d'isolement, PE coupé, contact direct, prise de terre trop résistante : vois quand le différentiel protège, et quand il ne peut rien.","Simulateur · schéma TT"],
+    ["effets","Les effets du courant","Tension touchée, peau sèche ou mouillée : calcule le courant qui traverse le corps et ce qu'il provoque.","I = U / R"],
+    ["accident","Accident électrique : que faire ?","Un collègue est resté collé à une machine. Protéger, Examiner, Faire alerter, Secourir : choisis les bons gestes dans le bon ordre.","Deux situations · SST"]
+  ];
+  const grille=(l)=>`<div class="niveaux">${l.map(([id,t,r,n])=>`<a class="niveau" href="#/consignation/${id}"><span class="num">${esc(n)}</span><h2>${esc(t)}</h2><p class="lead" style="margin:0">${esc(r)}</p><span style="font-weight:600;color:var(--brand-text);font-size:14px">Ouvrir →</span></a>`).join("")}</div>`;
+  main.innerHTML=`<div class="page-head"><div><p class="tag"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>Sécurité</p>
+    <h1>Travailler en sécurité</h1><p class="lead">Mettre un équipement en sécurité avant d'intervenir, comprendre ce qui protège les personnes, et savoir réagir face à un accident électrique.</p></div></div>
+    <h2 class="pp-section">Consigner</h2>
+    <p class="lead" style="margin:-4px 0 12px">Avant de travailler sur un équipement, on le met en sécurité de façon sûre et vérifiée : la NF C 18-510 appliquée à une pompe secourue par un groupe électrogène, et la consignation de toutes les énergies d'une presse hydraulique.</p>
+    ${grille(cartes)}
+    <h2 class="pp-section">Protéger les personnes</h2>
+    ${grille(proteger)}
+    <p class="astuce" style="margin-top:16px">Références : NF C 18-510 (2012, amendements A1 de 2020 et A2 de 2023) ; INRS ED 6109 « Consignations et déconsignations », 3e édition, 2020 ; INRS ED 7000, référentiel du sauveteur secouriste du travail. Ces activités entraînent au raisonnement : elles ne remplacent ni la formation à l'habilitation ou au SST, ni la procédure de ton entreprise.</p>`;
   return ()=>{};
 }
 

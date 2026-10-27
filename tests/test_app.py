@@ -150,7 +150,7 @@ async def main():
         async def dernier():
             return (await pg.inner_text("#journal")).split("\n")[0].lower()
         await pg.goto(BASE + "#/consignation"); await pg.wait_for_timeout(300)
-        verifie(await pg.locator(".niveau").count() == 6, "six activités de consignation")
+        verifie(await pg.locator(".niveau").count() == 9, "Sécurité : six activités de consignation et trois de protection")
         await pg.goto(BASE + "#/consignation/guidee"); await pg.wait_for_timeout(400)
         await k("man:Q1")
         verifie("pompe p1" in await dernier(), "guidée : Q1 refusé, ce n'est pas l'ouvrage")
@@ -233,6 +233,48 @@ async def main():
         v1 = (await pg.inner_text("#verdictFl")).lower()
         verifie("atteint la zone" in v0 and "reste hors pression" in v1, "fluides : la purge intermédiaire protège en cas de fuite")
 
+        print("Protéger les personnes")
+        async def seg(nom, v):
+            await pg.click(f'.segment[data-nom="{nom}"] button[data-v="{v}"]'); await pg.wait_for_timeout(60)
+        async def analyse():
+            return (await pg.inner_text("#analyse")).lower()
+        await pg.goto(BASE + "#/consignation/ddr"); await pg.wait_for_timeout(300)
+        await seg("defaut", "franc")
+        verifie("déclenché" in await etat(pg) and "2,09 a" in await analyse(), "DDR 30 mA : défaut franc, PE raccordé, Q1 déclenche (IΔ = 2,09 A)")
+        await pg.click("#rearmer"); await pg.wait_for_timeout(60)
+        verifie("redéclenche" in await analyse() or "déclenché" in await etat(pg), "DDR : le réarmement avec le défaut présent redéclenche")
+        await seg("defaut", "non"); await pg.click("#rearmer"); await seg("pe", "false"); await seg("defaut", "franc")
+        verifie("piège" in await analyse() and "230 v" in (await pg.inner_text("#mesures")).lower(), "DDR : PE coupé, masse à 230 V sans déclenchement")
+        await seg("ddr", "0"); await seg("contact", "masse")
+        verifie("électrisée" in await etat(pg) and "46 ma" in (await pg.inner_text("#corps")).lower(), "sans DDR ni PE : 46 mA permanents dans le corps (peau sèche)")
+        await seg("contact", "ln"); await seg("defaut", "non"); await seg("ddr", "30")
+        verifie("ne voit rien" in await analyse() and "sous tension" not in (await etat(pg)).replace("électrisée", ""), "DDR : contact phase-neutre, rien ne déclenche")
+        await seg("contact", "aucun"); await seg("pe", "true"); await seg("ddr", "500"); await seg("ra", "500"); await seg("defaut", "resistif")
+        verifie("sans déclenchement" in await analyse() and "250 v > 50 v" in (await pg.inner_text("#mesures")).lower(), "DDR 500 mA et Ra = 500 Ω : Uc > 50 V sans déclenchement")
+        await pg.click("#test"); await pg.wait_for_timeout(60)
+        verifie("test est réussi" in await analyse(), "bouton test : Q1 déclenche")
+        verifie(await pg.locator("#expes li.ok").count() == 6, "six expériences sur sept cochées")
+        await capture(pg, "protection-ddr")
+        await pg.goto(BASE + "#/consignation/effets"); await pg.wait_for_timeout(300)
+        await seg("peau", "mouillee")
+        verifie("230 ma" in (await pg.inner_text("#formule")).lower(), "effets : 230 V, peau mouillée, 230 mA")
+        await seg("u", "24")
+        verifie("tension de sécurité" in (await pg.inner_text("#tbt")).lower(), "effets : 24 V ≤ UL en local mouillé")
+        async def geste(a):
+            await pg.click(f'[data-a="{a}"]'); await pg.wait_for_timeout(40)
+        await pg.goto(BASE + "#/consignation/accident"); await pg.wait_for_timeout(300)
+        await geste("tirer")
+        verifie("sur-accident" in await etat(pg), "accident : toucher la victime sous tension, sur-accident")
+        await pg.click("#recommencer")
+        for a in ["couper", "condamner", "examiner", "alerter", "rcp", "dae"]:
+            await geste(a)
+        verifie("sans faute" in (await pg.inner_text("#bilan")).lower(), "accident, situation 1 : PEAS, massage et DAE sans faute")
+        await capture(pg, "protection-accident")
+        await seg("cas", "B")
+        for a in ["couper", "condamner", "examiner", "rcp", "poste", "arroser", "alerter", "surveiller"]:
+            await geste(a)
+        verifie("2 fautes" in (await pg.inner_text("#bilan")).lower(), "accident, situation 2 : massage d'une victime qui respire et retour au poste comptés comme fautes")
+
         print("Dépannage")
         async def borne(lab):
             await pg.locator(f'circle.mm-pt[aria-label*="{lab}"]').first.click(); await pg.wait_for_timeout(60)
@@ -312,7 +354,7 @@ async def main():
 
         print("Largeur téléphone (360 px)")
         await pg.set_viewport_size({"width": 360, "height": 780})
-        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/fluidique", "#/fluidique/double-effet", "#/fluidique/hydraulique", "#/depannage", "#/depannage/s3", "#/consignation", "#/consignation/guidee", "#/consignation/erreurs", "#/consignation/roles", "#/consignation/fluides", "#/consignation/presse-guidee", "#/infos"]:
+        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/fluidique", "#/fluidique/double-effet", "#/fluidique/hydraulique", "#/depannage", "#/depannage/s3", "#/consignation", "#/consignation/guidee", "#/consignation/erreurs", "#/consignation/roles", "#/consignation/fluides", "#/consignation/presse-guidee", "#/consignation/ddr", "#/consignation/effets", "#/consignation/accident", "#/infos"]:
             await pg.goto(BASE + route); await pg.wait_for_timeout(300)
             deborde = await pg.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
             verifie(not deborde, f"pas de défilement horizontal sur {route}")

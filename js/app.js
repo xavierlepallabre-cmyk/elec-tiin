@@ -1,7 +1,7 @@
 /* Élec TIIN — navigation, thème, état réseau, mises à jour. */
 (function(){
 "use strict";
-const VERSION="1.6.0";
+const VERSION="1.7.0";
 const main=document.getElementById("main");
 let quitter=()=>{};
 
@@ -25,6 +25,7 @@ function infos(){
         <ul>
           <li>Symboles graphiques : IEC 60617 (NF EN 60617).</li>
           <li>Équipement électrique des machines, sectionnement et arrêt d'urgence : NF EN 60204-1.</li>
+          <li>Protection des personnes : NF C 15-100 (schéma TT, différentiel 30 mA), effets du courant d'après l'IEC 60479, conduite à tenir d'après le référentiel SST de l'INRS (ED 7000).</li>
           <li>Lettres repères des appareils (Q, KM, F, S, H, M, T, X) : usage courant issu de l'IEC 81346 et des anciennes recommandations françaises.</li>
           <li>Les schémas reprennent les macros LaTeX de l'enseignant (symboles-electriques.tex), pour que cours et simulateur aient le même dessin.</li>
         </ul></section>
@@ -61,7 +62,8 @@ function route(){
     else if(onglet==="depannage")quitter=h[1]?window.ElecDepannage.ouvrir(main,h[1]):window.ElecDepannage.liste(main);
     else if(onglet==="consignation"){const C=window.ElecConsignation;
       quitter=h[1]==="presse-guidee"||h[1]==="presse-erreurs"?window.ElecConsFluides.scene(main,h[1]==="presse-guidee"?"guidee":"erreurs"):
-        h[1]==="guidee"||h[1]==="erreurs"?C.scene(main,h[1]):h[1]==="roles"?C.roles(main):h[1]==="fluides"?C.fluides(main):C.accueil(main);}
+        h[1]==="guidee"||h[1]==="erreurs"?C.scene(main,h[1]):h[1]==="roles"?C.roles(main):h[1]==="fluides"?C.fluides(main):
+        h[1]==="ddr"?window.ElecProtection.ddr(main):h[1]==="effets"?window.ElecProtection.effets(main):h[1]==="accident"?window.ElecProtection.accident(main):C.accueil(main);}
     else if(onglet==="defis")quitter=h[1]?window.ElecDefis.ouvrir(main,+h[1]):window.ElecDefis.liste(main);
     else if(onglet==="symboles")quitter=h[1]==="jeu"?window.ElecSymboles.jeu(main):window.ElecSymboles.imagier(main);
     else if(onglet==="infos")quitter=infos();
@@ -71,7 +73,7 @@ function route(){
     main.innerHTML=`<p class="lead">Cette page n'a pas pu s'afficher. <a href="#/atelier">Retour à l'Atelier</a></p>`;
     quitter=()=>{};
   }
-  const titres={atelier:"Atelier",fluidique:"Fluidique",defis:"Défis",depannage:"Dépannage",consignation:"Consignation",symboles:"Symboles",infos:"Informations"};
+  const titres={atelier:"Atelier",fluidique:"Fluidique",defis:"Défis",depannage:"Dépannage",consignation:"Sécurité",symboles:"Symboles",infos:"Informations"};
   document.title=(h[1]&&onglet==="atelier"?(window.ELEC_SCHEMAS.find(s=>s.id===h[1])||{}).titre+" · ":(titres[onglet]?titres[onglet]+" · ":""))+"Élec TIIN";
   window.scrollTo(0,0);
 }

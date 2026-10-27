@@ -11,7 +11,7 @@ function scene(main,mode){
   const guide=mode==="guidee";
   const Fl=window.ElecFluide;let P,st,detruit=false,raf=null,dernier=performance.now(),occupe=false;
 
-  main.innerHTML=`<a class="retour" href="#/consignation">← Consignation</a>
+  main.innerHTML=`<a class="retour" href="#/consignation">← Sécurité</a>
     <div class="page-head"><div><p class="tag">Énergies fluides et mécaniques</p><h1>Presse hydraulique · ${guide?"procédure guidée":"mode erreurs"}</h1>
       <p class="lead">${guide?"Le chargé de travaux doit changer l'outillage <b>sous l'outil de la presse</b>, resté en position haute. Tu es chargé de consignation : maîtrise l'énergie électrique du moteur de pompe, la pression de la pompe et de l'accumulateur, et le poids de l'outil.":"Même intervention, dans l'ordre que tu veux. Quand tu autorises les travaux, un opérateur, un collègue et l'usure d'un clapet mettent ta consignation à l'épreuve."}</p></div>
       <div class="etat" id="etat" role="status" aria-live="polite"></div></div>

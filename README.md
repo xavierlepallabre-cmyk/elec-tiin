@@ -4,7 +4,7 @@ Simulateurs de schémas électriques pour les apprentis du **Bac Pro TIIN** — 
 
 Application statique, installable sur tablette et utilisable hors connexion, sur le même principe que Nucléa TIIN et Sûreté & Cycle TIIN : HTML, CSS et JavaScript natifs, sans framework, sans compte, sans serveur, sans aucune note ni historique.
 
-## Contenu de la version 1.6
+## Contenu de la version 1.7
 
 **Atelier** — trois simulateurs :
 - Démarrage direct un sens (disjoncteur-moteur, transformateur 400 V / 24 V, sectionneur général cadenassable) ;
@@ -19,12 +19,19 @@ Dans chaque simulateur : les fils sous tension passent en rouge, le neutre et le
 
 **Dépannage** — seize pannes cachées dans les trois schémas (contact usé ou oxydé, bobine coupée, pôle hors service, contacts soudés, voyant grillé, contact temporisé défaillant). L'apprenti observe le symptôme, mesure au multimètre virtuel (tension sous tension, résistance hors tension, refus de l'ohmmètre sur un circuit alimenté), fait maintenir un bouton par un collègue, puis désigne l'élément défaillant. Les contacts sont dessinés dans l'état de leur appareil : la panne ne se voit qu'à la mesure. Pannes décrites dans `js/depannage-data.js`.
 
-**Consignation** — pompe secourue par un groupe électrogène selon la NF C 18-510 (2012 + A1 2020 + A2 2023), et presse hydraulique selon l'INRS ED 6109 :
+**Sécurité** — deux volets.
+
+*Consigner* : pompe secourue par un groupe électrogène selon la NF C 18-510 (2012 + A1 2020 + A2 2023), et presse hydraulique selon l'INRS ED 6109 :
 - *procédure guidée* : séparation de toutes les sources, condamnation, identification, VAT avec autotest avant et après la mesure, MALT-CC, attestation de consignation, puis avis de fin de travail et déconsignation dans le bon ordre ;
 - *mode erreurs* : ordre libre, puis une journée de travail met la consignation à l'épreuve (opérateur qui veut refermer, essai du groupe électrogène) avec un bilan étape par étape ;
 - *rôles et habilitations* : circuit des documents, rôles BC, B2, B1, BR, B0, lecture des symboles, quiz ;
 - *presse hydraulique* (procédure guidée et mode erreurs) : intervention sous l'outil en position haute ; béquille de sécurité, séparation électrique (sectionneur du moteur de pompe) et hydraulique (vanne d'isolement), purge de l'accumulateur et de la chambre du vérin, condamnation des purges ouvertes, vérification (manomètres, essai de démarrage, essai du levier), déconsignation avec reprise de la charge avant le retrait de la béquille ;
 - *fluides* : les quatre opérations et les niveaux d'isolement de l'INRS ED 6109 (3e éd., 2020), avec une conduite interactive (fuite de vanne, purge, joint plein, tronçon démonté).
+
+*Protéger les personnes* :
+- *le disjoncteur différentiel* : installation en schéma TT (transformateur, neutre à la terre, DDR avec son tore et son bouton test, appareil à carcasse métallique, PE et prise de terre Ra). On choisit la sensibilité (aucun, 30, 300, 500 mA), l'isolement (sain, abîmé, défaut franc), le PE (raccordé ou coupé), la prise de terre (20, 100, 500 Ω), ce que touche la personne (rien, la carcasse, un fil de phase, phase et neutre) et l'état de sa peau. Le simulateur calcule le courant de fuite, la tension de la masse, le courant dans le corps et sa durée, vérifie la règle Ra × IΔn ≤ 50 V et anime le chemin du courant. Sept expériences guident l'apprenti (dont le piège du PE coupé et le contact phase-neutre que le DDR ne voit pas) ;
+- *les effets du courant* : I = U / R selon la tension touchée et l'état de la peau, placé sur une échelle des seuils (perception, non-lâcher, paralysie respiratoire, fibrillation, arrêt cardiaque), avec la tension limite UL ;
+- *accident électrique* : deux situations (arrêt cardiaque ; victime consciente brûlée) à résoudre en choisissant les gestes dans l'ordre Protéger, Examiner, Faire alerter, Secourir (référentiel SST, INRS ED 7000). Toucher la victime avant de couper provoque un sur-accident ; les autres erreurs sont expliquées et listées au bilan.
 
 **Symboles** — imagier de 23 symboles IEC 60617 (lettre repère, bornes, fonction) et jeu de reconnaissance par séries de dix questions, sans enregistrement du résultat.
 
@@ -49,12 +56,13 @@ elec-tiin/
 │   ├── consignation-data.js scénario, rôles, quiz et fluides de la Consignation
 │   ├── consignation.js      procédure guidée, mode erreurs, rôles, fluides
 │   ├── consignation-fluides.js consignation de la presse hydraulique
+│   ├── protection.js        différentiel, effets du courant, accident électrique
 │   ├── app.js               navigation, thème, mises à jour
 │   └── schemas/             ★ un fichier par schéma (voir AJOUTER-UN-SCHEMA.md)
 ├── assets/                  police Lexend (licence OFL) et logo du lycée
 ├── icons/                   icônes de l'application installée
 ├── tools/version.py         met à jour le numéro de cache avant publication
-└── tests/test_app.py        99 vérifications dans un vrai navigateur
+└── tests/test_app.py        115 vérifications dans un vrai navigateur
 ```
 
 ## Publier sur GitHub Pages
