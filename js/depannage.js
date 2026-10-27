@@ -30,23 +30,57 @@ function chargesDessinees(sch){
 function liste(main){
   const P=DATA().pannes;
   const groupes=["direct-un-sens","deux-sens","etoile-triangle"].map(id=>({sch:schemaBase(id),pannes:P.filter(p=>p.schema===id)}));
+  const num=p=>P.indexOf(p)+1;
   main.innerHTML=`
     <div class="page-head"><div>
       <p class="tag"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>Dépannage</p>
       <h1>Trouver la panne</h1>
       <p class="lead">Une panne est cachée dans un schéma de l'Atelier. Fais fonctionner l'installation, mesure avec le multimètre, puis désigne l'élément défaillant. Plusieurs pannes donnent le même symptôme : seule la mesure permet de conclure.</p>
     </div><button type="button" class="btn btn-primary" id="hasard">Panne au hasard</button></div>
+    <section class="bloc dep-numero" style="margin-bottom:16px"><h2>Panne donnée par l'enseignant</h2>
+      <form id="formNumero" class="dep-numero-form" novalidate>
+        <label for="numPanne">Numéro de panne</label>
+        <input id="numPanne" type="number" inputmode="numeric" min="1" max="${P.length}" placeholder="1 à ${P.length}" required>
+        <button type="submit" class="btn btn-primary">Commencer le diagnostic</button>
+      </form>
+      <p class="astuce" id="numErreur" aria-live="polite">Saisis le numéro que t'a donné ton enseignant : le diagnostic commence directement sur cette panne.</p></section>
     <section class="bloc" style="margin-bottom:16px"><h2>La méthode</h2>
       <ol class="etapes-fl">${DATA().methode.map(([t,x],i)=>`<li><span class="n">${i+1}</span><div><b>${esc(t)}</b><p>${esc(x)}</p></div></li>`).join("")}</ol></section>
     ${groupes.map(g=>`<section style="margin-bottom:18px"><h2 style="margin-bottom:10px">${esc(g.sch.titre)}</h2>
-      <div class="niveaux">${g.pannes.map((p,i)=>`<a class="niveau" href="#/depannage/${p.id}"><span class="num">Panne ${i+1}</span><p style="margin:0">${esc(p.symptome)}</p><span style="font-weight:600;color:var(--brand-text);font-size:14px">Diagnostiquer →</span></a>`).join("")}</div></section>`).join("")}`;
+      <div class="niveaux">${g.pannes.map(p=>`<a class="niveau" href="#/depannage/n/${num(p)}"><span class="num">Panne ${num(p)}</span><p style="margin:0">${esc(p.symptome)}</p><span style="font-weight:600;color:var(--brand-text);font-size:14px">Diagnostiquer →</span></a>`).join("")}</div></section>`).join("")}`;
   main.querySelector("#hasard").onclick=()=>{location.hash="#/depannage/"+P[Math.floor(Math.random()*P.length)].id;};
+  main.insertAdjacentHTML("beforeend",`<p class="astuce" style="margin-top:8px">Enseignant : <a href="#/depannage/corrige">corrigé des ${P.length} pannes</a> (numéro, symptôme, élément défaillant).</p>`);
+  main.querySelector("#formNumero").onsubmit=e=>{
+    e.preventDefault();const n=+main.querySelector("#numPanne").value;
+    if(Number.isInteger(n)&&n>=1&&n<=P.length)location.hash="#/depannage/n/"+n;
+    else{const m=main.querySelector("#numErreur");m.textContent=`Ce numéro n'existe pas : choisis un nombre entre 1 et ${P.length}.`;m.classList.add("pp-ko");}
+  };
+  return ()=>{};
+}
+
+/* ---------- corrigé enseignant ---------- */
+function libelleElement(sch,id){
+  for(const f of sch.folios){const c=(f.contacts||[]).find(c=>c.id===id);if(c)return libContact(c);}
+  const ch=chargesDessinees(sch).find(c=>c.id===id);
+  return ch?(ch.type==="bobine"?"Bobine ":"Voyant ")+ch.lab:id;
+}
+function corrige(main){
+  const P=DATA().pannes;
+  main.innerHTML=`<a class="retour" href="#/depannage">← Dépannage</a>
+    <div class="page-head"><div><p class="tag">Réservé à l'enseignant</p><h1>Corrigé des pannes</h1>
+      <p class="lead">Donne un numéro à l'apprenti : il le saisit dans « Panne donnée par l'enseignant » et le diagnostic commence. Ce corrigé n'est pas protégé : ne l'affiche pas devant la classe.</p></div>
+      <button type="button" class="btn" onclick="window.print()">Imprimer</button></div>
+    <div class="dep-corrige">${P.map((p,i)=>{const sch=schemaBase(p.schema);
+      return `<article class="bloc"><h2>Panne ${i+1} · ${esc(sch.titre)}</h2>
+        <p><b>Symptôme :</b> ${esc(p.symptome)}</p>
+        <p><b>Élément défaillant :</b> ${p.cibles.map(c=>esc(libelleElement(sch,c))).join(", ")}${p.cibles.length>1?" (un seul suffit pour valider)":""}</p>
+        <p class="astuce">${esc(p.explication)}</p></article>`;}).join("")}</div>`;
   return ()=>{};
 }
 
 /* ---------- une panne ---------- */
-function ouvrir(main,pid){
-  const panne=DATA().pannes.find(p=>p.id===pid);
+function ouvrir(main,pid,numero){
+  const panne=numero?DATA().pannes[numero-1]:DATA().pannes.find(p=>p.id===pid);
   if(!panne){main.innerHTML=`<p class="lead">Cette panne n'existe pas. <a href="#/depannage">Retour au Dépannage</a></p>`;return ()=>{};}
   const sch=JSON.parse(JSON.stringify(schemaBase(panne.schema)));
   const R=DATA().resistances[panne.schema];
@@ -60,7 +94,7 @@ function ouvrir(main,pid){
     <a class="retour" href="#/depannage">← Dépannage</a>
     <div class="page-head"><div>
       <p class="tag">${esc(sch.titre)}</p>
-      <h1>Diagnostic de panne</h1>
+      <h1>Diagnostic de panne${numero?` n° ${numero}`:""}</h1>
     </div><div class="etat" id="etat" data-s="arret" role="status" aria-live="polite"></div></div>
     <div class="sim">
       <div class="folios-zone">
@@ -292,5 +326,5 @@ function ouvrir(main,pid){
   return ()=>{detruit=true;if(minuteur)clearInterval(minuteur);};
 }
 
-window.ElecDepannage={liste,ouvrir};
+window.ElecDepannage={liste,ouvrir,corrige};
 })();

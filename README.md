@@ -62,7 +62,7 @@ elec-tiin/
 ├── assets/                  police Lexend (licence OFL) et logo du lycée
 ├── icons/                   icônes de l'application installée
 ├── tools/version.py         met à jour le numéro de cache avant publication
-└── tests/test_app.py        115 vérifications dans un vrai navigateur
+└── tests/test_app.py        118 vérifications dans un vrai navigateur
 ```
 
 ## Publier sur GitHub Pages
