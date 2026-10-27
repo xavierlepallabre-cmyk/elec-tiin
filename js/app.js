@@ -1,7 +1,7 @@
 /* Élec TIIN — navigation, thème, état réseau, mises à jour. */
 (function(){
 "use strict";
-const VERSION="1.2.0";
+const VERSION="1.3.0";
 const main=document.getElementById("main");
 let quitter=()=>{};
 
@@ -57,7 +57,9 @@ function route(){
     if(a.dataset.onglet===onglet)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");
   });
   try{
-    if(onglet==="defis")quitter=h[1]?window.ElecDefis.ouvrir(main,+h[1]):window.ElecDefis.liste(main);
+    if(onglet==="consignation"){const C=window.ElecConsignation;
+      quitter=h[1]==="guidee"||h[1]==="erreurs"?C.scene(main,h[1]):h[1]==="roles"?C.roles(main):h[1]==="fluides"?C.fluides(main):C.accueil(main);}
+    else if(onglet==="defis")quitter=h[1]?window.ElecDefis.ouvrir(main,+h[1]):window.ElecDefis.liste(main);
     else if(onglet==="symboles")quitter=h[1]==="jeu"?window.ElecSymboles.jeu(main):window.ElecSymboles.imagier(main);
     else if(onglet==="infos")quitter=infos();
     else quitter=h[1]?window.ElecAtelier.ouvrir(main,h[1]):window.ElecAtelier.liste(main);
@@ -66,7 +68,7 @@ function route(){
     main.innerHTML=`<p class="lead">Cette page n'a pas pu s'afficher. <a href="#/atelier">Retour à l'Atelier</a></p>`;
     quitter=()=>{};
   }
-  const titres={atelier:"Atelier",defis:"Défis",symboles:"Symboles",infos:"Informations"};
+  const titres={atelier:"Atelier",defis:"Défis",consignation:"Consignation",symboles:"Symboles",infos:"Informations"};
   document.title=(h[1]&&onglet==="atelier"?(window.ELEC_SCHEMAS.find(s=>s.id===h[1])||{}).titre+" · ":(titres[onglet]?titres[onglet]+" · ":""))+"Élec TIIN";
   window.scrollTo(0,0);
 }

@@ -144,9 +144,68 @@ async def main():
         verifie("triangle" in v and "réussi" not in v, "défi 5 : un temporisé NF empêche le triangle")
         await capture(pg, "defi-5")
 
+        print("Consignation")
+        async def k(key):
+            await pg.locator(f'[data-k="{key}"]').first.click(); await pg.wait_for_timeout(60)
+        async def dernier():
+            return (await pg.inner_text("#journal")).split("\n")[0].lower()
+        await pg.goto(BASE + "#/consignation"); await pg.wait_for_timeout(300)
+        verifie(await pg.locator(".niveau").count() == 4, "quatre activités de consignation")
+        await pg.goto(BASE + "#/consignation/guidee"); await pg.wait_for_timeout(400)
+        await k("man:Q1")
+        verifie("pompe p1" in await dernier(), "guidée : Q1 refusé, ce n'est pas l'ouvrage")
+        await k("man:Q2"); await k("cad:Q2")
+        verifie("deuxième source" in await dernier(), "guidée : condamner avant d'ouvrir Q3 est refusé")
+        await k("man:Q3"); await k("cad:Q2"); await k("cad:Q3"); await k("ident")
+        await k("vat:test")
+        verifie("hors service" in await dernier(), "guidée : le test révèle un VAT en panne")
+        await k("vat:mesure")
+        verifie("teste le vat" in await dernier(), "guidée : mesure refusée sans VAT testé")
+        for key in ["vat:piles", "vat:test", "vat:mesure", "vat:test", "malt", "att:B2"]:
+            await k(key)
+        verifie("consigné" in await etat(pg), "guidée : M2 consigné et à la terre")
+        await capture(pg, "consignation-guidee")
+        await k("travaux"); await pg.wait_for_timeout(5800)
+        j = (await pg.inner_text("#journal")).lower()
+        verifie("cadenas l'en empêche" in j and "reste hors tension" in j, "guidée : cadenas et Q3 consigné protègent pendant les travaux")
+        await k("avis"); await k("cad:Q2")
+        verifie("d'abord la malt-cc" in await dernier(), "guidée : la MALT-CC se retire avant les cadenas")
+        for key in ["malt", "cad:Q2", "cad:Q3", "man:Q2", "man:Q3"]:
+            await k(key)
+        verifie("terminée" in (await pg.inner_text("#consigne")).lower(), "guidée : procédure complète jusqu'à la remise en service")
+
+        await pg.goto(BASE + "#/consignation/erreurs"); await pg.wait_for_timeout(400)
+        for key in ["man:Q2", "vat:mesure", "att:B2"]:
+            await k(key)
+        await k("travaux"); await pg.wait_for_timeout(6000)
+        b = (await pg.inner_text("#docs")).lower()
+        verifie("accident" in b, "erreurs : Q2 seul sans cadenas, l'électricien est électrisé")
+        await capture(pg, "consignation-erreurs")
+        await pg.locator("#recommencer").click(); await pg.wait_for_timeout(200)
+        for key in ["man:Q2", "man:Q3", "cad:Q2", "vat:test", "vat:piles", "vat:test", "vat:mesure", "vat:test", "malt", "att:B2"]:
+            await k(key)
+        await k("travaux"); await pg.wait_for_timeout(6000)
+        b = (await pg.inner_text("#docs")).lower()
+        verifie("grâce à la malt-cc" in b, "erreurs : Q3 non condamné, la MALT-CC sauve l'équipe")
+        await pg.locator("#recommencer").click(); await pg.wait_for_timeout(200)
+        await k("malt")
+        verifie("arc électrique" in await dernier(), "erreurs : MALT-CC posée sous tension, arc électrique")
+
+        await pg.goto(BASE + "#/consignation/roles"); await pg.wait_for_timeout(300)
+        for _ in range(7):
+            await pg.locator("#quiz .choix button").first.click()
+            await pg.locator("#quiz .suite").click()
+        verifie(await pg.locator("#quiz .bilan").count() == 1, "quiz des rôles jusqu'au bilan")
+        await pg.goto(BASE + "#/consignation/fluides"); await pg.wait_for_timeout(300)
+        await pg.click("#fuite")
+        v0 = (await pg.inner_text("#verdictFl")).lower()
+        await pg.click('[data-n="R1"]')
+        v1 = (await pg.inner_text("#verdictFl")).lower()
+        verifie("atteint la zone" in v0 and "reste hors pression" in v1, "fluides : la purge intermédiaire protège en cas de fuite")
+
         print("Largeur téléphone (360 px)")
         await pg.set_viewport_size({"width": 360, "height": 780})
-        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/infos"]:
+        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/consignation", "#/consignation/guidee", "#/consignation/erreurs", "#/consignation/roles", "#/consignation/fluides", "#/infos"]:
             await pg.goto(BASE + route); await pg.wait_for_timeout(300)
             deborde = await pg.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
             verifie(not deborde, f"pas de défilement horizontal sur {route}")

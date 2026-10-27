@@ -15,6 +15,7 @@ class Simulation{
     this.sch=schema;
     this.contacts=[];
     schema.folios.forEach(f=>(f.contacts||[]).forEach(c=>this.contacts.push(c)));
+    (schema.contactsCaches||[]).forEach(c=>this.contacts.push(c)); // contacts non dessinés (groupe, MALT-CC)
     this.reinitialiser();
   }
   reinitialiser(){
