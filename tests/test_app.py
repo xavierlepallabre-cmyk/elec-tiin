@@ -396,7 +396,7 @@ async def main():
         print("Schémas des cours")
         await pg.goto(BASE + "cours/generer.html"); await pg.wait_for_function("window.genererSchemasCours")
         r = await pg.evaluate("window.genererSchemasCours()")
-        verifie(not r["erreurs"] and len(r["fichiers"]) >= 9, f"schémas F12 générés sans erreur du validateur ({len(r['fichiers'])} fichiers)")
+        verifie(not r["erreurs"] and len(r["fichiers"]) >= 9, f"schémas des cours générés sans erreur du validateur ({len(r['fichiers'])} fichiers)")
         neg = await pg.evaluate("""()=>{const d=JSON.parse(JSON.stringify(COURS_SCHEMAS.find(x=>x.id==="EL-018")));
           d.folio.joncs=d.folio.joncs.filter(j=>j[0]!=="A");d.folio.fils=d.folio.fils.filter(f=>f[0]!=="a2");return validerSchemaCours(d);}""")
         verifie(any("jonction manquante" in e for e in neg) and any("non raccordée" in e for e in neg), "le validateur détecte une jonction manquante et un conducteur interrompu")

@@ -150,5 +150,6 @@ const el021e=Object.assign({id:"EL-021-etats",titre:"Déclenchement thermique : 
   ]
 });
 
+window.COURS_OUTILS={NO,NF,rails,logique,fusion,ETATS_LEGENDE};
 window.COURS_SCHEMAS=(window.COURS_SCHEMAS||[]).concat([el015,el016,el017,el018,el019,el020,el020c,el021,el021e]);
 })();

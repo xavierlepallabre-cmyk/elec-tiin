@@ -120,6 +120,12 @@ class Feuille{
     this.trait([[xFin+d,y+0.16],[xFin,y+0.16],[xFin,y-0.16],[xFin+d,y-0.16]]);
     if(rep)this.rep(xFin-0.08,p[1],rep,sous,"fin");
   }
+  coupDePoing(de,xFin,rep,sous){ // arrêt d'urgence vertical : tête « coup de poing » et accrochage
+    const p=this.ref(de),y=p[1],S=this.S;this.tirets([p,[xFin,y]]);
+    this.chemin(`M${this.X(xFin)} ${this.Y(y+0.2)} A${0.2*S} ${0.2*S} 0 0 0 ${this.X(xFin)} ${this.Y(y-0.2)} Z`);
+    const m=(p[0]+xFin)/2;this.trait([[m-0.08,y+0.12],[m+0.04,y],[m-0.08,y-0.12]]);
+    if(rep)this.rep(xFin-0.28,y,rep,sous,"fin");
+  }
   lienTempo(de,dx,rep){ // deux traits parallèles terminés par un arc ouvert vers le contact
     const p=this.ref(de),x=p[0],y=p[1];
     this.trait([[x,y+0.055],[x-dx-0.1,y+0.055]]);this.trait([[x,y-0.055],[x-dx-0.1,y-0.055]]);
@@ -193,6 +199,48 @@ class Feuille{
     this.texte(x+0.06,y-0.15,"X1","born");this.texte(x+0.06,y-1.05,"X2","born");
     this.charges[id]={type:"voyant",e:c,halo,teinte:teinte||"vert"};
   }
+  /* dipôle de longueur 1,2 cm, vertical vers le bas (orient « v ») ou horizontal vers la droite (« h »).
+     type : R (résistance), L (bobinage), V, A, Ω, MΩ, W (appareils de mesure), G~ / G= (générateur) */
+  dipole(type,x,y,a,b,rep,sous,orient){
+    const h=orient==="h",P=(t,n)=>h?[x+t,y+n]:[x+n,y-t],S=this.S;
+    const mes=/^(V|A|Ω|MΩ|W|G~|G=)$/.test(type),l=mes?0.3:type==="L"?0.2:/^D/.test(type)?0.4:0.25;
+    this.fil(a,[P(0,0),P(l,0)]);this.fil(b,[P(1.2-l,0),P(1.2,0)]);
+    if(type==="R"){const p=P(0.25,-0.12),q=P(0.95,0.12);this.cadre(Math.min(p[0],q[0]),Math.max(p[1],q[1]),Math.max(p[0],q[0]),Math.min(p[1],q[1]));}
+    else if(type==="L"){
+      let d="M"+this.X(P(0.2,0)[0])+" "+this.Y(P(0.2,0)[1]);
+      for(let i=0;i<4;i++){const e=P(0.4+0.2*i,0);d+=` A${0.1*S} ${0.1*S} 0 0 ${h?1:0} ${this.X(e[0])} ${this.Y(e[1])}`;}
+      this.chemin(d);
+    } else if(/^D/.test(type)){ // diode : « D » anode au début, « D- » cathode au début
+      const [b,t]=type==="D"?[0.4,0.8]:[0.8,0.4];
+      el("polygon",{points:this.pts([P(b,-0.18),P(b,0.18),P(t,0)]),class:"symb plein"},this.gSymb);
+      this.trait([P(t,-0.18),P(t,0.18)]);
+    } else if(mes){
+      const c=P(0.6,0);el("circle",{cx:this.X(c[0]),cy:this.Y(c[1]),r:0.3*S,class:"symb plein-fond"},this.gSymb);
+      this.texte(c[0],c[1],type==="G~"?"~":type==="G="?"=":type,type.length>1&&!/^G/.test(type)?"rep rep-bob":"rep","milieu");
+    }
+    if(rep){
+      if(h){this.texte(x+0.6,y+(mes?0.5:0.35),rep,"rep","milieu");if(sous)this.texte(x+0.6,y-(mes?0.5:0.35),sous,"sous","milieu");}
+      else this.rep(x-(mes?0.42:0.26),y-0.6,rep,sous,"fin");
+    }
+  }
+  /* point de raccordement d'un appareil (borne repérée), suivi par le contrôle des schémas */
+  raccord(x,y,net,lab,cote){this.borne(x,y,lab,cote);}
+  boite(x1,y1,x2,y2,titre,sous){
+    el("rect",{x:this.X(x1),y:this.Y(y1),width:(x2-x1)*this.S,height:(y1-y2)*this.S,class:"symb"},this.gSymb);
+    if(titre)this.texte((x1+x2)/2,y1-0.28,titre,"gras","milieu");
+    if(sous)this.texte((x1+x2)/2,y1-0.58,sous,"sous","milieu");
+  }
+  barrette(x1,y1,x2,y2){ // barrette de couplage d'une plaque à bornes
+    const a=Math.min(x1,x2)-0.1,b=Math.max(x1,x2)+0.1,c=Math.max(y1,y2)+0.1,d=Math.min(y1,y2)-0.1;
+    el("rect",{x:this.X(a),y:this.Y(c),width:(b-a)*this.S,height:(c-d)*this.S,rx:0.08*this.S,class:"plein"},this.gSymb);
+  }
+  fleche2(x1,y1,x2,y2){ // flèche (curseur de potentiomètre, sens d'un courant)
+    this.trait([[x1,y1],[x2,y2]]);
+    const a=Math.atan2(y2-y1,x2-x1),l=0.18,o=0.07;
+    el("polygon",{points:this.pts([[x2,y2],[x2-l*Math.cos(a)+o*Math.sin(a),y2-l*Math.sin(a)-o*Math.cos(a)],[x2-l*Math.cos(a)-o*Math.sin(a),y2-l*Math.sin(a)+o*Math.cos(a)]]),class:"plein"},this.gSymb);
+  }
+  cercle(x,y,r,cls){return el("circle",{cx:this.X(x),cy:this.Y(y),r:r*this.S,class:cls||"symb"},this.gSymb);}
+  losange(x,y,r){this.trait([[x,y+r],[x+r,y],[x,y-r],[x-r,y],[x,y+r]]);}
   fusible(x,y,a,b,rep){ // fusible en ligne (FU), bornes en (x,y) et (x,y-1,2)
     this.fil(a,[[x,y],[x,y-0.6]]);this.fil(b,[[x,y-0.6],[x,y-1.2]]);
     this.cadre(x-0.12,y-0.25,x+0.12,y-0.95);

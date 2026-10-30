@@ -40,23 +40,31 @@ function construireSuivi(svg,folio){
   (folio.fils||[]).forEach(f=>{F.fil(f[0],f[1]);fils.push({net:f[0],pts:f[1]});});
   (folio.joncs||[]).forEach(j=>F.jonc(j[0],j[1],j[2]));
   (folio.contacts||[]).forEach(c=>{
-    const H=c.type==="sectfus"?1.4:1.2;
-    suivre("contact "+c.id,[[c.x,c.y,c.haut],[c.x,c.y-H,c.bas]],()=>F.contact(c));
+    const H=c.type==="sectfus"?1.4:1.2,b=c.rot===90?[c.x+H,c.y]:[c.x,c.y-H];
+    suivre("contact "+c.id,[[c.x,c.y,c.haut],[b[0],b[1],c.bas]],()=>F.contact(c));
   });
+  const points=[]; // bornes non repérées et transformateurs : extrémités admises
   (folio.dessin||[]).forEach(cmd=>{
     const [nom,...a]=cmd;
     if(typeof F[nom]!=="function")throw new Error("Commande de dessin inconnue : "+nom);
     if(nom==="fil"){F.fil(a[0],a[1]);fils.push({net:a[0],pts:a[1]});return;}
     if(nom==="bobine"||nom==="voyant")return suivre(nom+" "+a[0],[[a[1],a[2],a[3]],[a[1],a[2]-1.2,a[4]]],()=>F[nom](...a));
     if(nom==="fusible")return suivre("fusible "+(a[4]||""),[[a[0],a[1],a[2]],[a[0],a[1]-1.2,a[3]]],()=>F[nom](...a));
+    if(nom==="dipole")return suivre("dipôle "+(a[5]||a[0]),[[a[1],a[2],a[3]],a[7]==="h"?[a[1]+1.2,a[2],a[4]]:[a[1],a[2]-1.2,a[4]]],()=>F[nom](...a));
+    if(nom==="thermique")return suivre("relais thermique",[[a[1],a[2],a[0]],[a[1],a[2]-0.56,a[0]]],()=>F[nom](...a));
+    if(nom==="raccord")return suivre("borne "+(a[3]||a[2]),[[a[0],a[1],a[2]]],()=>F[nom](...a));
+    if(nom==="borne")points.push({p:[a[0],a[1]],r:0.08});
+    if(nom==="moteur")points.push({p:[a[0],a[1]],r:a[2]+0.02});
+    if(nom==="terre")points.push({p:[a[0],a[1]],r:0.05});
+    if(nom==="transfo")points.push({p:[a[1],a[2]],r:0.37},{p:[a[1],a[2]-0.5],r:0.37});
     F[nom](...a);
   });
-  return {F,comps,fils};
+  return {F,comps,fils,points};
 }
 
 /* ---------- validateur dessin–logique ---------- */
 function valider(def,suivi){
-  const err=[],{comps,fils}=suivi,folio=def.folio;
+  const err=[],{comps,fils,points}=suivi,folio=def.folio;
   const f2=v=>v.toFixed(2).replace(".",",");
   const ou=p=>`(${f2(p[0])} ; ${f2(p[1])})`;
   const libres=folio.libres||[];
@@ -64,12 +72,12 @@ function valider(def,suivi){
   const bornes=[].concat(...comps.map(c=>c.bornes.map(b=>({p:[b[0],b[1]],net:b[2],qui:c.nom}))));
   // 1. bornes des appareils
   bornes.forEach(b=>{
-    if(!fils.some(w=>w.net===b.net&&touche(b.p,w.pts)))err.push(`${b.qui} : borne ${ou(b.p)} non raccordée au conducteur « ${b.net} ».`);
+    if(!fils.some(w=>w.net===b.net&&touche(b.p,w.pts))&&!bornes.some(o=>o!==b&&o.qui!==b.qui&&o.net===b.net&&proche(o.p,b.p)))err.push(`${b.qui} : borne ${ou(b.p)} non raccordée au conducteur « ${b.net} ».`);
     tousFils.filter(w=>w.net!==b.net&&w.qui!==b.qui&&touche(b.p,w.pts)).forEach(w=>err.push(`${b.qui} : borne ${ou(b.p)} touche le conducteur « ${w.net} » (${w.qui}).`));
   });
   // 2. extrémités libres
   fils.forEach((w,i)=>[w.pts[0],w.pts[w.pts.length-1]].forEach(e=>{
-    const ok=bornes.some(b=>b.net===w.net&&proche(b.p,e))||fils.some((v,j)=>j!==i&&v.net===w.net&&touche(e,v.pts))||libres.some(l=>proche(l,e));
+    const ok=bornes.some(b=>b.net===w.net&&proche(b.p,e))||fils.some((v,j)=>j!==i&&v.net===w.net&&touche(e,v.pts))||libres.some(l=>proche(l,e))||points.some(q=>Math.hypot(q.p[0]-e[0],q.p[1]-e[1])<q.r+TOL);
     if(!ok)err.push(`Conducteur « ${w.net} » : extrémité libre en ${ou(e)}.`);
   }));
   // 3. contact entre conducteurs de repères différents
@@ -81,12 +89,12 @@ function valider(def,suivi){
   fils.forEach(w=>w.pts.forEach(p=>{if(!pts.some(q=>q.net===w.net&&proche(q.p,p)))pts.push({p,net:w.net});}));
   const joncs=(folio.joncs||[]).map(j=>({net:j[0],p:[j[1],j[2]]}));
   pts.forEach(({p,net})=>{
-    const n=fils.filter(w=>w.net===net).reduce((s,w)=>s+branches(p,w.pts),0)+bornes.filter(b=>b.net===net&&proche(b.p,p)).length;
+    const n=fils.filter(w=>w.net===net).reduce((s,w)=>s+branches(p,w.pts),0)+bornes.filter(b=>b.net===net&&!/^borne /.test(b.qui)&&proche(b.p,p)).length;
     const j=joncs.some(k=>proche(k.p,p));
     if(n>=3&&!j)err.push(`Conducteur « ${net} » : jonction manquante en ${ou(p)} (${n} branches).`);
   });
   joncs.forEach(k=>{
-    const n=fils.filter(w=>w.net===k.net).reduce((s,w)=>s+branches(k.p,w.pts),0)+bornes.filter(b=>b.net===k.net&&proche(b.p,k.p)).length;
+    const n=fils.filter(w=>w.net===k.net).reduce((s,w)=>s+branches(k.p,w.pts),0)+bornes.filter(b=>b.net===k.net&&!/^borne /.test(b.qui)&&proche(b.p,k.p)).length;
     if(n<3)err.push(`Point de jonction « ${k.net} » en ${ou(k.p)} : ${n} branche(s), il est inutile ou mal placé.`);
   });
   // 5. chaque conducteur forme un seul morceau
@@ -95,7 +103,8 @@ function valider(def,suivi){
     const L=tousFils.filter(w=>w.net===net),par=L.map((_,i)=>i);
     const r=i=>{while(par[i]!==i)i=par[i]=par[par[i]];return i;};
     for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++)
-      if(L[i].pts.some(p=>touche(p,L[j].pts))||L[j].pts.some(p=>touche(p,L[i].pts)))par[r(i)]=r(j);
+      if(L[i].pts.some(p=>touche(p,L[j].pts))||L[j].pts.some(p=>touche(p,L[i].pts))
+        ||joncs.some(k=>k.net===net&&touche(k.p,L[i].pts)&&touche(k.p,L[j].pts)))par[r(i)]=r(j); // croisement avec point de jonction
     const g=new Set(L.map((_,i)=>r(i))).size;
     if(g>1)err.push(`Conducteur « ${net} » dessiné en ${g} morceaux séparés.`);
   });
@@ -127,6 +136,8 @@ function resume(def,sim){
     if(ch.type==="bobine")L.push(`${app?app[0]:ch.id} ${on?"enclenché":"au repos"}`);
     if(ch.type==="voyant")L.push(`${ch.id} ${on?"allumé":"éteint"}`);
   }
+  if(def.logique.moteur&&sim.mot){const m=sim.mot;
+    L.push(m.tourne?"M1 en marche"+(m.couplage?" ("+m.couplage+")":def.logique.moteur.afficheSens?" sens "+m.sens:""):"M1 à l'arrêt");}
   return L.join(" · ");
 }
 
@@ -177,23 +188,29 @@ function generer(){
     if(def.controle!==false)erreurs.push(...valider(def,suivi));
     if(!def.etats){
       auRepos(suivi.F);
-      fichiers.push({nom:def.id+".svg",svg:X.svgAutonome(s0,{noir:true,titre:def.titre,description:def.id+" — contacts au repos"})});
+      fichiers.push({nom:def.id+".svg",titre:def.titre,svg:X.svgAutonome(s0,{noir:true,titre:def.titre,description:def.id+" — contacts au repos"})});
       bilan.push(def.id+" : schéma au repos");
       continue;
     }
-    const schema=Object.assign({folios:[{contacts:def.folio.contacts}]},def.logique);
+    const schema=def.logique.folios?def.logique:Object.assign({folios:[{contacts:def.folio.contacts}]},def.logique);
     const sim=new window.ElecSimulation(schema);
+    let T=0;sim.maintenant=()=>T; // temps simulé (temporisations)
+    sim.reinitialiser();
     if(def.pannes)sim.definirPannes(def.pannes);
     const vues=[];
     for(const e of def.etats){
-      e.actions.forEach(([a,id,v])=>{if(a==="appuyer")sim.appuyer(id,v);else sim[a](id);});
+      e.actions.forEach(([a,id,v])=>{
+        if(a==="attendre"){T+=id;sim.resoudre();}
+        else if(a==="appuyer")sim.appuyer(id,v);
+        else sim[a](id);
+      });
       for(const [k,v] of Object.entries(e.attendu||{}))
         if(!!sim.charges[k]!==v)erreurs.push(`${def.id} — « ${e.titre} » : ${k} devrait être ${v?"alimenté":"hors tension"}.`);
       const s=nouveau(),F=construireSuivi(s,def.folio).F;
       peindreEtat(F,sim,schema);
       vues.push({titre:e.titre,resume:resume(def,sim),note:e.note,svg:X.svgAutonome(s,{noir:true})});
     }
-    fichiers.push({nom:def.id+".svg",svg:composer(def,vues)});
+    fichiers.push({nom:def.id+".svg",titre:def.titre,svg:composer(def,vues)});
     bilan.push(`${def.id} : ${vues.length} états calculés`);
   }
   zone.innerHTML="";
