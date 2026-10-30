@@ -29,20 +29,21 @@ function luminance(c){
   const f=v=>{v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);};
   return 0.2126*f(c.r)+0.7152*f(c.g)+0.0722*f(c.b);
 }
-/* Renvoie [couleur, opacité] ou null (aucune peinture). */
+/* Renvoie [couleur, opacité] ou null (aucune peinture).
+   En noir et blanc, seuls les « fonds » (bobine, voyant, fusible, fond de symbole) peuvent être gris :
+   gris s'ils sont colorés (alimenté, allumé, fondu), blanc sinon. Tout le reste est noir ou blanc. */
 function peinture(val,noir,estFond){
   if(!val||val==="none")return null;
   const c=rgba(val);
   if(!c)return [val,1];
   if(c.a===0)return null;
   if(!noir)return [hex(c),c.a];
-  const L=luminance(c);
-  if(!estFond)return L>0.92?["#ffffff",1]:["#000000",1];  // traits et textes
   if(c.a<1)return null;                                   // halos et surbrillances : supprimés
+  const L=luminance(c);
   if(L>0.92)return ["#ffffff",1];
-  if(L<0.2)return ["#000000",1];                          // pastilles de jonction, flèches pleines
-  return ["#c4c4c4",1];                                   // voyant allumé, bobine alimentée, fusible fondu
+  return estFond?["#c4c4c4",1]:["#000000",1];
 }
+const FONDS=["bobine","voyant","fusible","plein-fond","borne"];
 
 /* ---------- copie figée d'un SVG vivant ---------- */
 function figer(src,dst,noir){
@@ -55,7 +56,7 @@ function figer(src,dst,noir){
     for(const p of PROPS){
       let v=cs.getPropertyValue(p);
       if(p==="fill"||p==="stroke"){
-        const r=peinture(v,noir,p==="fill");
+        const r=peinture(v,noir,p==="fill"&&FONDS.some(k=>src.classList.contains(k)));
         if(!r){dst.setAttribute(p,"none");continue;}
         dst.setAttribute(p,r[0]);
         if(r[1]<1)dst.setAttribute(p+"-opacity",String(+r[1].toFixed(3)));

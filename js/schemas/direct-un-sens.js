@@ -61,8 +61,8 @@
       {id:"Q32",app:"Q3",type:"disj",x:5.4,y:-1.0,haut:"b2",bas:"p2",b:["3","4"],bpos:"p"},
       {id:"Q2c",app:"Q2",type:"disj",x:7.6,y:-4.1,haut:"s24",bas:"c1"},
       {id:"Q1a",app:"Q1",type:"no",x:7.6,y:-5.3,haut:"c1",bas:"c2",b:["13","14"]},
-      {id:"S1c",app:"S1",mode:"nf",type:"nf",x:7.6,y:-6.5,haut:"c2",bas:"c3",b:["1","2"]},
-      {id:"S2c",app:"S2",type:"no",x:7.6,y:-8.1,haut:"c3",bas:"c4",b:["3","4"]},
+      {id:"S1c",app:"S1",mode:"nf",type:"nf",x:7.6,y:-6.5,haut:"c2",bas:"c3",b:["11","12"]},
+      {id:"S2c",app:"S2",type:"no",x:7.6,y:-8.1,haut:"c3",bas:"c4",b:["13","14"]},
       {id:"KMa",app:"KM1",type:"no",x:8.9,y:-8.1,haut:"c3",bas:"c4",b:["13","14"]}
     ],
     dessin:[

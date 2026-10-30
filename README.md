@@ -68,8 +68,10 @@ elec-tiin/
 │   └── schemas/             ★ un fichier par schéma (voir AJOUTER-UN-SCHEMA.md)
 ├── assets/                  police Lexend (licence OFL) et logo du lycée
 ├── icons/                   icônes de l'application installée
+├── cours/                   schémas des cours (descriptions, générateur, SVG produits ; voir cours/README.md)
 ├── tools/version.py         met à jour le numéro de cache avant publication
-└── tests/test_app.py        130 vérifications dans un vrai navigateur
+├── tools/generer_schemas.py génère et contrôle les schémas des cours
+└── tests/test_app.py        132 vérifications dans un vrai navigateur
 ```
 
 ## Publier sur GitHub Pages

@@ -115,9 +115,9 @@ class Feuille{
 
   /* ---------- liaisons mécaniques et organes de commande ---------- */
   lien(de,xFin,rep,sous){const p=this.ref(de);this.tirets([p,[xFin,p[1]]]);if(rep)this.rep(xFin-0.07,p[1],rep,sous,"fin");}
-  poussoir(de,xFin,rep,sous){
-    const p=this.ref(de);this.tirets([p,[xFin,p[1]]]);
-    this.trait([[xFin,p[1]+0.16],[xFin,p[1]-0.16]]);
+  poussoir(de,xFin,rep,sous){ // commande par poussée (CEI 60617 02-13-05) : crochet ouvert vers le contact
+    const p=this.ref(de),y=p[1],d=p[0]>=xFin?0.11:-0.11;this.tirets([p,[xFin,y]]);
+    this.trait([[xFin+d,y+0.16],[xFin,y+0.16],[xFin,y-0.16],[xFin+d,y-0.16]]);
     if(rep)this.rep(xFin-0.08,p[1],rep,sous,"fin");
   }
   lienTempo(de,dx,rep){ // deux traits parallèles terminés par un arc ouvert vers le contact
@@ -192,6 +192,11 @@ class Feuille{
     this.rep(x+0.32,y-0.6,lab,null);
     this.texte(x+0.06,y-0.15,"X1","born");this.texte(x+0.06,y-1.05,"X2","born");
     this.charges[id]={type:"voyant",e:c,halo,teinte:teinte||"vert"};
+  }
+  fusible(x,y,a,b,rep){ // fusible en ligne (FU), bornes en (x,y) et (x,y-1,2)
+    this.fil(a,[[x,y],[x,y-0.6]]);this.fil(b,[[x,y-0.6],[x,y-1.2]]);
+    this.cadre(x-0.12,y-0.25,x+0.12,y-0.95);
+    if(rep)this.rep(x-0.24,y-0.6,rep,null,"fin");
   }
   transfo(id,x,y){ // centre du primaire, secondaire 0,5 cm dessous
     const p=el("circle",{cx:this.X(x),cy:this.Y(y),r:0.35*this.S,class:"symb"},this.gSymb);
