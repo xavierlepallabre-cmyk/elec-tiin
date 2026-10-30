@@ -112,6 +112,17 @@ function ouvrir(main,id){
           <div class="legende" id="legende"></div>
           <p class="astuce">Tu peux aussi toucher les appareils directement sur le schéma.</p>
         </section>
+        <section class="bloc exporter" aria-label="Exporter le schéma">
+          <h2>Exporter le schéma</h2>
+          ${multi?`<label class="champ">Folio <select id="expFolio">${sch.folios.map((f,i)=>`<option value="${i}">${esc(f.titre)}</option>`).join("")}</select></label>`:""}
+          <fieldset class="exp-etat"><legend class="sr-only">État exporté</legend>
+            <label class="option"><input type="radio" name="expEtat" value="repos" checked> Au repos (schéma normalisé)</label>
+            <label class="option"><input type="radio" name="expEtat" value="affiche"> État affiché à l'écran</label>
+          </fieldset>
+          <label class="option"><input type="checkbox" id="expNoir"> Noir et blanc (photocopie)</label>
+          <div class="actions"><button type="button" class="btn" data-fmt="svg">SVG</button><button type="button" class="btn" data-fmt="png">PNG 300 ppp</button></div>
+          <p class="astuce" id="expMsg" aria-live="polite">SVG : vectoriel, pour le cours (LaTeX, traitement de texte). PNG : image pour Éléa ou un diaporama. Échelle 1:1.</p>
+        </section>
       </div>
     </div>`;
 
@@ -129,6 +140,20 @@ function ouvrir(main,id){
     (f.zones||[]).forEach(([app,x1,y1,x2,y2,label])=>branche(F.zone(x1,y1,x2,y2,label),app,true));
     feuilles.push(F);
   });
+  /* export */
+  const X=window.ElecExport;
+  main.querySelectorAll(".exporter [data-fmt]").forEach(b=>b.addEventListener("click",async()=>{
+    const i=multi?+main.querySelector("#expFolio").value:0, f=sch.folios[i];
+    const repos=main.querySelector('input[name="expEtat"]:checked').value==="repos";
+    const noir=main.querySelector("#expNoir").checked;
+    const source=repos
+      ?()=>X.horsEcran(svg=>{const F=D.construire(svg,f);Object.values(F.contacts).forEach(c=>c.maj(c.spec.mode==="nf"||c.spec.mode==="tnf","var(--mort)"));})
+      :()=>({svg:feuilles[i].svg});
+    const nom=[sch.id,multi?X.slug(f.titre):"",repos?"repos":"etat",noir?"nb":""].filter(Boolean).join("-");
+    const msg=main.querySelector("#expMsg");
+    const ok=await X.exporter(source,b.dataset.fmt,nom,{noir,titre:sch.titre+" — "+f.titre,description:repos?"Contacts au repos":"État simulé"},b);
+    msg.textContent=ok?`Fichier ${nom}.${b.dataset.fmt} enregistré dans les téléchargements.`:"L'export n'a pas abouti sur cet appareil. Essaie l'autre format.";
+  }));
   main.querySelectorAll(".segment button").forEach(b=>b.addEventListener("click",()=>{
     vue=b.dataset.vue;
     main.querySelectorAll(".segment button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));

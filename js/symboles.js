@@ -23,6 +23,7 @@ function imagier(main){
       <p class="lead">Les symboles des schémas de l'Atelier, avec la lettre repère de l'appareil et ses bornes usuelles. Contacts dessinés au repos.</p>
     </div><a class="btn btn-primary" href="#/symboles/jeu">Jouer : reconnaître les symboles</a></div>
     <div class="filtres" role="group" aria-label="Familles de symboles">${cats.map(c=>`<button type="button" data-c="${c.id}" aria-pressed="${c.id==="tous"}">${esc(c.nom)}</button>`).join("")}</div>
+    <label class="option export-nb"><input type="checkbox" id="expNoir"> Exporter en noir et blanc (photocopie)</label>
     <div class="imagier" id="imagier"></div>`;
   const zone=main.querySelector("#imagier");
   function remplir(){
@@ -30,8 +31,16 @@ function imagier(main){
     window.ELEC_SYMBOLES.filter(s=>filtre==="tous"||s.cat===filtre).forEach(s=>{
       const a=document.createElement("article");a.className="fiche";
       a.innerHTML=`<div class="dessin"></div><div class="txt"><div class="ligne"><h3>${esc(s.nom)}</h3>${s.repere?`<span class="repere">${esc(s.repere)}</span>`:""}</div>
-        <p>${esc(s.fonction)}</p>${s.bornes?`<p><b>Bornes :</b> ${esc(s.bornes)}</p>`:""}</div>`;
-      a.querySelector(".dessin").appendChild(dessiner(s));
+        <p>${esc(s.fonction)}</p>${s.bornes?`<p><b>Bornes :</b> ${esc(s.bornes)}</p>`:""}
+        <div class="exp-sym" role="group" aria-label="Exporter ${esc(s.nom)}"><span>Exporter</span><button type="button" class="btn" data-fmt="svg">SVG</button><button type="button" class="btn" data-fmt="png">PNG</button></div></div>`;
+      const svg=dessiner(s);
+      a.querySelector(".dessin").appendChild(svg);
+      a.querySelectorAll("[data-fmt]").forEach(b=>b.addEventListener("click",async()=>{
+        const X=window.ElecExport,noir=main.querySelector("#expNoir").checked;
+        const nom="symbole-"+X.slug(s.nom)+(noir?"-nb":"");
+        const ok=await X.exporter(()=>({svg}),b.dataset.fmt,nom,{noir,titre:s.nom,description:"Symbole, contacts au repos"},b);
+        if(!ok)b.closest(".exp-sym").querySelector("span").textContent="Échec, essaie l'autre format";
+      }));
       zone.appendChild(a);
     });
   }

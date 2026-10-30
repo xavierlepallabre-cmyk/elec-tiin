@@ -35,6 +35,12 @@ Dans chaque simulateur : les fils sous tension passent en rouge, le neutre et le
 
 **Symboles** — imagier de 23 symboles IEC 60617 (lettre repère, bornes, fonction) et jeu de reconnaissance par séries de dix questions, sans enregistrement du résultat.
 
+**Export (v1.9)** — chaque folio de l'Atelier et chaque symbole de l'imagier s'exporte en fichier autonome :
+- *SVG* vectoriel, pour un cours LaTeX (via `\includesvg` ou après conversion en PDF avec Inkscape), un traitement de texte ou Éléa ; *PNG* à 300 ppp avec la police Lexend incorporée ;
+- *au repos* (schéma normalisé, contacts en position de repos) ou *dans l'état affiché* par la simulation (fils sous tension en couleur) ;
+- option *noir et blanc* pour la photocopie : traits et textes noirs, voyants allumés et bobines alimentées en gris, sans filtre global (le rendu reste vectoriel) ;
+- échelle 1:1 (1 cm du schéma = 1 cm imprimé), palette du thème clair même si l'application est en thème sombre, zones cliquables retirées, titre et licence inscrits dans le fichier.
+
 ## Organisation du dossier
 
 ```
@@ -42,6 +48,7 @@ elec-tiin/
 ├── index.html, style.css, icon.svg, manifest.webmanifest, sw.js
 ├── js/
 │   ├── dessin.js            symboles (mêmes dessins que les macros LaTeX symboles-electriques.tex)
+│   ├── export.js            export SVG / PNG autonome des schémas et des symboles
 │   ├── moteur.js            simulation « tout ou rien » (équipotentielles, contacteurs, temporisations)
 │   ├── atelier.js           liste des schémas et simulateur
 │   ├── symboles-data.js     contenu de l'imagier
@@ -62,7 +69,7 @@ elec-tiin/
 ├── assets/                  police Lexend (licence OFL) et logo du lycée
 ├── icons/                   icônes de l'application installée
 ├── tools/version.py         met à jour le numéro de cache avant publication
-└── tests/test_app.py        118 vérifications dans un vrai navigateur
+└── tests/test_app.py        130 vérifications dans un vrai navigateur
 ```
 
 ## Publier sur GitHub Pages
