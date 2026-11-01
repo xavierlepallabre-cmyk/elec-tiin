@@ -66,7 +66,7 @@ elec-tiin/
 │   ├── protection.js        différentiel, effets du courant, accident électrique
 │   ├── app.js               navigation, thème, mises à jour
 │   └── schemas/             ★ un fichier par schéma (voir AJOUTER-UN-SCHEMA.md)
-├── assets/                  police Lexend (licence OFL) et logo du lycée
+├── assets/                  police Lexend (licence OFL), logo du lycée et logo du Bac Pro TIIN
 ├── icons/                   icônes de l'application installée
 ├── tools/version.py         met à jour le numéro de cache avant publication
 └── tests/test_app.py        130 vérifications dans un vrai navigateur
@@ -120,6 +120,8 @@ Tu peux le réutiliser, le copier et l'adapter, à trois conditions :
 - **Attribution** : citer l'auteur original (Xavier Le Pallabre), indiquer la licence et signaler les modifications ;
 - **Pas d'utilisation commerciale** : pas de vente ni d'usage dans un service payant ;
 - **Partage dans les mêmes conditions** : diffuser les adaptations sous la même licence.
+
+Le logo du Bac Pro TIIN est une création de Xavier Le Pallabre : il est couvert par cette licence, comme le reste de ses contenus.
 
 Ne sont pas couverts par cette licence :
 - la police Lexend (`assets/fonts/`), sous licence SIL Open Font License 1.1 (voir `assets/fonts/OFL.txt`) ;

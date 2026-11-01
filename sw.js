@@ -1,7 +1,7 @@
 /* Élec TIIN — fonctionnement hors connexion.
    Changer CACHE à chaque publication (tools/version.py le fait automatiquement). */
-const CACHE='elec-tiin-8bbb95fc0b';
-const ASSETS=['./','./index.html','./style.css','./icon.svg','./manifest.webmanifest',
+const CACHE='elec-tiin-43546ade5c';
+const ASSETS=['./','./index.html','./style.css','./icon.svg','./assets/logo-bac-pro-tiin.svg','./icons/apple-touch-icon.png','./manifest.webmanifest',
  './assets/fonts/lexend.css','./assets/fonts/lexend-0.ttf','./assets/fonts/lexend-1.ttf','./assets/fonts/lexend-2.ttf','./assets/fonts/lexend-3.ttf',
  './assets/logo-tocqueville.png','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png',
  './js/dessin.js','./js/export.js','./js/moteur.js','./js/symboles-data.js','./js/atelier.js','./js/symboles.js','./js/defis-data.js','./js/defis.js','./js/fluidique-dessin.js','./js/fluidique-data.js','./js/fluidique.js','./js/depannage-data.js','./js/depannage.js','./js/consignation-data.js','./js/consignation.js','./js/consignation-fluides.js','./js/protection.js','./js/app.js',
