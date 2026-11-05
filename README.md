@@ -4,7 +4,7 @@ Simulateurs de schémas électriques pour les apprentis du **Bac Pro TIIN** — 
 
 Application statique, installable sur tablette et utilisable hors connexion, sur le même principe que Nucléa TIIN et Sûreté & Cycle TIIN : HTML, CSS et JavaScript natifs, sans framework, sans compte, sans serveur, sans aucune note ni historique.
 
-## Contenu de la version 1.10
+## Contenu de la version 1.11
 
 **Atelier** — trois simulateurs :
 - Démarrage direct un sens (disjoncteur-moteur, transformateur 400 V / 24 V, sectionneur général cadenassable) ;
@@ -36,6 +36,7 @@ Dans chaque simulateur : les fils sous tension passent en rouge, le neutre et le
 **Mode BTS** — le bouton « BTS » de la barre du haut affiche les contenus de niveau BTS MS (choix mémorisé sur l'appareil) :
 - *Machines, plaque signalétique* : trois moteurs, réseau 230 V ou 400 V ; l'étudiant détermine le couplage et la possibilité d'un démarrage étoile-triangle, puis calcule vitesse de synchronisme, glissement, courant de ligne, puissance absorbée, rendement, couple utile et courant de démarrage ; chaque réponse est vérifiée (tolérance 2 %) et corrigée ;
 - *Machines, démarrages comparés* : courbes couple-vitesse du moteur et de la charge (pompe ou convoyeur, couple et inertie réglables), simulation du démarrage (vitesse et courant en fonction du temps) en direct, étoile-triangle (temporisation réglable), démarreur progressif (limitation de courant) et variateur (rampe), bilan chiffré et tableau comparatif des quatre procédés. Les courbes sont des courbes types interpolées à partir des valeurs catalogue.
+- *Dépannage d'un départ moteur* (onglet Dépannage) : chaîne de puissance Q1, KM1, F1, bornier, câble de 25 m, boîte à bornes et moteur de 4 kW, avec un différentiel 300 mA en amont. Instruments : voltmètre (dont chute de tension aux bornes d'un appareil fermé), pince ampèremétrique par phase et sur les trois phases (courant de fuite), mégohmmètre 500 V, ohmmètre. On consigne Q1, on ouvre la boîte à bornes pour mesurer le câble et le moteur séparément. Huit pannes numérotées (isolement du moteur humide, défaut franc du câble ou du moteur, spires en court-circuit, pôle de contacteur, conducteur coupé, connexion desserrée, thermique mal réglé), à résoudre en désignant l'élément défaillant et l'action corrective ; corrigé enseignant imprimable.
 
 **Symboles** — imagier de 23 symboles IEC 60617 (lettre repère, bornes, fonction) et jeu de reconnaissance par séries de dix questions, sans enregistrement du résultat.
 
@@ -64,6 +65,7 @@ elec-tiin/
 │   ├── fluidique.js         simulateur fluidique
 │   ├── depannage-data.js    pannes, résistances et méthode du Dépannage
 │   ├── depannage.js         diagnostic et multimètre virtuel
+│   ├── depannage-bts.js     mode BTS : dépannage d'un départ moteur en puissance
 │   ├── consignation-data.js scénario, rôles, quiz et fluides de la Consignation
 │   ├── consignation.js      procédure guidée, mode erreurs, rôles, fluides
 │   ├── consignation-fluides.js consignation de la presse hydraulique
@@ -74,7 +76,7 @@ elec-tiin/
 ├── assets/                  police Lexend (licence OFL), logo du lycée et logo du Bac Pro TIIN
 ├── icons/                   icônes de l'application installée
 ├── tools/version.py         met à jour le numéro de cache avant publication
-└── tests/test_app.py        140 vérifications dans un vrai navigateur
+└── tests/test_app.py        154 vérifications dans un vrai navigateur
 ```
 
 ## Publier sur GitHub Pages

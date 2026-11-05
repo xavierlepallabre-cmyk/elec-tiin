@@ -37,6 +37,7 @@ function liste(main){
       <h1>Trouver la panne</h1>
       <p class="lead">Une panne est cachée dans un schéma de l'Atelier. Fais fonctionner l'installation, mesure avec le multimètre, puis désigne l'élément défaillant. Plusieurs pannes donnent le même symptôme : seule la mesure permet de conclure.</p>
     </div><button type="button" class="btn btn-primary" id="hasard">Panne au hasard</button></div>
+    <a class="bts-bandeau bts-seul" href="#/depannage/bts"><span class="pill bts-pill">BTS MS</span><span><b>Dépannage d'un départ moteur en puissance</b><br><small>Pince ampèremétrique, mégohmmètre 500 V, ohmmètre, séparation câble et moteur : ${window.ElecDepBTS?window.ElecDepBTS.PANNES.length:8} pannes avec diagnostic et action corrective.</small></span><span class="ouvrir">Ouvrir →</span></a>
     <section class="bloc dep-numero" style="margin-bottom:16px"><h2>Panne donnée par l'enseignant</h2>
       <form id="formNumero" class="dep-numero-form" novalidate>
         <label for="numPanne">Numéro de panne</label>

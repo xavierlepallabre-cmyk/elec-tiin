@@ -1,7 +1,7 @@
 /* Élec TIIN — navigation, thème, état réseau, mises à jour. */
 (function(){
 "use strict";
-const VERSION="1.10.0";
+const VERSION="1.11.0";
 const main=document.getElementById("main");
 let quitter=()=>{};
 
@@ -59,7 +59,8 @@ function route(){
   });
   try{
     if(onglet==="fluidique")quitter=h[1]?window.ElecFluidique.ouvrir(main,h[1]):window.ElecFluidique.liste(main);
-    else if(onglet==="depannage"){const Dp=window.ElecDepannage;quitter=h[1]==="corrige"?Dp.corrige(main):h[1]==="n"?Dp.ouvrir(main,null,+h[2]):h[1]?Dp.ouvrir(main,h[1]):Dp.liste(main);}
+    else if(onglet==="depannage"){const Dp=window.ElecDepannage;const B=window.ElecDepBTS,bts=document.documentElement.dataset.niveau==="bts";
+      quitter=(h[1]==="bts"||h[1]==="bts-corrige")&&!bts?(location.hash="#/depannage",()=>{}):h[1]==="bts"?(h[2]?B.ouvrir(main,+h[2]):B.liste(main)):h[1]==="bts-corrige"?B.corrige(main):h[1]==="corrige"?Dp.corrige(main):h[1]==="n"?Dp.ouvrir(main,null,+h[2]):h[1]?Dp.ouvrir(main,h[1]):Dp.liste(main);}
     else if(onglet==="consignation"){const C=window.ElecConsignation;
       quitter=h[1]==="presse-guidee"||h[1]==="presse-erreurs"?window.ElecConsFluides.scene(main,h[1]==="presse-guidee"?"guidee":"erreurs"):
         h[1]==="guidee"||h[1]==="erreurs"?C.scene(main,h[1]):h[1]==="roles"?C.roles(main):h[1]==="fluides"?C.fluides(main):
