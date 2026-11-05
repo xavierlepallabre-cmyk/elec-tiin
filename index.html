@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/fonts/lexend.css">
 <link rel="stylesheet" href="style.css">
-<script>try{const t=localStorage.getItem("elec-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>try{const t=localStorage.getItem("elec-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;if(localStorage.getItem("elec-niveau")==="bts")document.documentElement.dataset.niveau="bts"}catch(e){}</script>
 <title>Élec TIIN</title>
 </head>
 <body>
@@ -32,10 +32,12 @@
       <a href="#/defis" data-onglet="defis"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h4a2 2 0 1 1 4 0h4v4a2 2 0 1 1 0 4v4h-4a2 2 0 1 0-4 0H4v-4a2 2 0 1 0 0-4z"/></svg><span>Défis</span></a>
       <a href="#/depannage" data-onglet="depannage"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14.5 5.5a4 4 0 0 0 4.9 4.9l-9 9a2.1 2.1 0 0 1-3-3l9-9a4 4 0 0 1-1.9-1.9zM17 3l4 4"/></svg><span>Dépannage</span></a>
       <a href="#/consignation" data-onglet="consignation"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3M12 15v2"/></svg><span>Sécurité</span></a>
+      <a href="#/machines" data-onglet="machines" class="bts-seul"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 5v2M12 17v2M5 12h2M17 12h2M9.5 9.5 12 12l3-1.5"/></svg><span>Machines</span></a>
       <a href="#/symboles" data-onglet="symboles"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><circle cx="17.5" cy="6.5" r="3.5"/><path d="M3 21l3.5-7 3.5 7zM14 14h7v7h-7z"/></svg><span>Symboles</span></a>
     </nav>
     <div class="top-actions">
       <span class="status-pill" id="netStatus" hidden><span class="dot" aria-hidden="true"></span>Hors ligne</span>
+      <button id="niveauToggle" class="niveau-btn" type="button" aria-pressed="false" title="Mode BTS : afficher les contenus de niveau BTS MS" aria-label="Mode BTS"><span class="niveau-pastille" aria-hidden="true"></span>BTS</button>
       <a class="icon-btn" href="#/infos" data-onglet="infos" aria-label="Informations">ⓘ</a>
       <button id="themeToggle" class="icon-btn" type="button" aria-label="Basculer le thème clair / sombre" title="Thème clair / sombre"><svg class="i-moon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="i-sun" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
     </div>
@@ -66,6 +68,7 @@
 <script src="js/consignation.js"></script>
 <script src="js/consignation-fluides.js"></script>
 <script src="js/protection.js"></script>
+<script src="js/machines.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

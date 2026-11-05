@@ -13,6 +13,7 @@ function liste(main){
       <h1>Simulateurs de schémas</h1>
       <p class="lead">Choisis un schéma, puis manœuvre les appareils. Les conducteurs sous tension passent en rouge, le 0 V et le neutre en bleu.</p>
     </div></div>
+    <a class="bts-bandeau bts-seul" href="#/machines"><span class="pill bts-pill">BTS MS</span><span><b>Machines : le moteur asynchrone</b><br><small>Plaque signalétique, calculs, et démarrages comparés en chiffres : direct, étoile-triangle, démarreur progressif, variateur.</small></span><span class="ouvrir">Ouvrir →</span></a>
     <div class="cartes" id="cartes"></div>`;
   const zone=main.querySelector("#cartes");
   schemas().forEach(s=>{

@@ -1,7 +1,7 @@
 /* Élec TIIN — navigation, thème, état réseau, mises à jour. */
 (function(){
 "use strict";
-const VERSION="1.9.0";
+const VERSION="1.10.0";
 const main=document.getElementById("main");
 let quitter=()=>{};
 
@@ -30,7 +30,7 @@ function infos(){
           <li>Les schémas reprennent les macros LaTeX de l'enseignant (symboles-electriques.tex), pour que cours et simulateur aient le même dessin.</li>
         </ul></section>
       <section class="bloc"><h2>Confidentialité</h2>
-        <p>Aucun compte, aucune note, aucun historique. L'application n'enregistre que le choix du thème clair ou sombre sur l'appareil.</p></section>
+        <p>Aucun compte, aucune note, aucun historique. L'application n'enregistre sur l'appareil que le choix du thème clair ou sombre et du mode BTS.</p></section>
       <section class="bloc"><h2>Version et mise à jour</h2>
         <p>Version ${VERSION}. L'application fonctionne hors connexion après la première ouverture.</p>
         <div class="actions"><button type="button" class="btn" id="checkUpdate">Rechercher une mise à jour</button></div>
@@ -67,18 +67,31 @@ function route(){
     else if(onglet==="defis")quitter=h[1]?window.ElecDefis.ouvrir(main,+h[1]):window.ElecDefis.liste(main);
     else if(onglet==="symboles")quitter=h[1]==="jeu"?window.ElecSymboles.jeu(main):window.ElecSymboles.imagier(main);
     else if(onglet==="infos")quitter=infos();
+    else if(onglet==="machines")quitter=document.documentElement.dataset.niveau==="bts"?window.ElecMachines.ouvrir(main,h[1]):(location.hash="#/atelier",()=>{});
     else quitter=h[1]?window.ElecAtelier.ouvrir(main,h[1]):window.ElecAtelier.liste(main);
   }catch(err){
     console.error(err);
     main.innerHTML=`<p class="lead">Cette page n'a pas pu s'afficher. <a href="#/atelier">Retour à l'Atelier</a></p>`;
     quitter=()=>{};
   }
-  const titres={atelier:"Atelier",fluidique:"Fluidique",defis:"Défis",depannage:"Dépannage",consignation:"Sécurité",symboles:"Symboles",infos:"Informations"};
+  const titres={atelier:"Atelier",fluidique:"Fluidique",defis:"Défis",depannage:"Dépannage",consignation:"Sécurité",machines:"Machines",symboles:"Symboles",infos:"Informations"};
   document.title=(h[1]&&onglet==="atelier"?(window.ELEC_SCHEMAS.find(s=>s.id===h[1])||{}).titre+" · ":(titres[onglet]?titres[onglet]+" · ":""))+"Élec TIIN";
   window.scrollTo(0,0);
 }
 window.addEventListener("hashchange",route);
 route();
+
+/* niveau BTS */
+const niveauBtn=document.getElementById("niveauToggle");
+function majNiveau(){const bts=document.documentElement.dataset.niveau==="bts";niveauBtn.setAttribute("aria-pressed",String(bts));}
+niveauBtn.addEventListener("click",()=>{
+  const r=document.documentElement,bts=r.dataset.niveau!=="bts";
+  if(bts)r.dataset.niveau="bts";else delete r.dataset.niveau;
+  try{localStorage.setItem("elec-niveau",bts?"bts":"bacpro");}catch(e){}
+  majNiveau();
+  if(!bts&&(location.hash||"").startsWith("#/machines"))location.hash="#/atelier";else route();
+});
+majNiveau();
 
 /* thème */
 document.getElementById("themeToggle").addEventListener("click",()=>{
