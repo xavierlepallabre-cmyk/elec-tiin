@@ -1,7 +1,7 @@
 /* Élec TIIN — navigation, thème, état réseau, mises à jour. */
 (function(){
 "use strict";
-const VERSION="1.11.0";
+const VERSION="1.12.0";
 const main=document.getElementById("main");
 let quitter=()=>{};
 
@@ -68,6 +68,7 @@ function route(){
     else if(onglet==="defis")quitter=h[1]?window.ElecDefis.ouvrir(main,+h[1]):window.ElecDefis.liste(main);
     else if(onglet==="symboles")quitter=h[1]==="jeu"?window.ElecSymboles.jeu(main):window.ElecSymboles.imagier(main);
     else if(onglet==="infos")quitter=infos();
+    else if(onglet==="chronogrammes")quitter=h[1]?window.ElecChrono.ouvrir(main,+h[1]):window.ElecChrono.liste(main);
     else if(onglet==="machines")quitter=document.documentElement.dataset.niveau==="bts"?window.ElecMachines.ouvrir(main,h[1]):(location.hash="#/atelier",()=>{});
     else quitter=h[1]?window.ElecAtelier.ouvrir(main,h[1]):window.ElecAtelier.liste(main);
   }catch(err){
@@ -75,7 +76,7 @@ function route(){
     main.innerHTML=`<p class="lead">Cette page n'a pas pu s'afficher. <a href="#/atelier">Retour à l'Atelier</a></p>`;
     quitter=()=>{};
   }
-  const titres={atelier:"Atelier",fluidique:"Fluidique",defis:"Défis",depannage:"Dépannage",consignation:"Sécurité",machines:"Machines",symboles:"Symboles",infos:"Informations"};
+  const titres={atelier:"Atelier",fluidique:"Fluidique",defis:"Défis",depannage:"Dépannage",consignation:"Sécurité",machines:"Machines",chronogrammes:"Chronogrammes",symboles:"Symboles",infos:"Informations"};
   document.title=(h[1]&&onglet==="atelier"?(window.ELEC_SCHEMAS.find(s=>s.id===h[1])||{}).titre+" · ":(titres[onglet]?titres[onglet]+" · ":""))+"Élec TIIN";
   window.scrollTo(0,0);
 }

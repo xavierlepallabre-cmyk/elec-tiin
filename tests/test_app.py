@@ -308,6 +308,22 @@ async def main():
             await geste(a)
         verifie("2 fautes" in (await pg.inner_text("#bilan")).lower(), "accident, situation 2 : massage d'une victime qui respire et retour au poste comptés comme fautes")
 
+        print("Chronogrammes")
+        await pg.goto(BASE + "#/chronogrammes"); await pg.wait_for_timeout(300)
+        verifie(await pg.locator(".niveau:visible").count() == 4, "chronogrammes : quatre exercices Bac Pro hors mode BTS")
+        await pg.goto(BASE + "#/chronogrammes/1"); await pg.wait_for_timeout(300)
+        for c in list(range(2, 9)) + list(range(14, 20)):
+            await pg.locator(f'[data-k="KM1"][data-c="{c}"]').click()
+        await pg.click("#verifier")
+        r = (await pg.inner_text("#resultat")).lower()
+        verifie("à reprendre : m1." in r, "chronogramme 1 : KM1 juste, moteur à tracer")
+        await pg.click("#solution")
+        verifie(await pg.locator(".cg-c.faux").count() == 0, "chronogramme : la solution affichée ne comporte aucune erreur")
+        await pg.goto(BASE + "#/atelier/direct-un-sens"); await pg.wait_for_timeout(400)
+        await appui(pg, "S2", 400); await pg.wait_for_timeout(600)
+        d = await pg.locator("#chrono path.cg-trace").nth(2).get_attribute("d")
+        verifie(d and d.count("L") >= 2, "Atelier : l'enregistreur trace le chronogramme en direct")
+
         print("Dépannage")
         async def borne(lab):
             await pg.locator(f'circle.mm-pt[aria-label*="{lab}"]').first.click(); await pg.wait_for_timeout(60)
@@ -451,7 +467,7 @@ async def main():
 
         print("Largeur téléphone (360 px)")
         await pg.set_viewport_size({"width": 360, "height": 780})
-        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/fluidique", "#/fluidique/double-effet", "#/fluidique/hydraulique", "#/depannage", "#/depannage/s3", "#/depannage/n/7", "#/depannage/corrige", "#/consignation", "#/consignation/guidee", "#/consignation/erreurs", "#/consignation/roles", "#/consignation/fluides", "#/consignation/presse-guidee", "#/consignation/ddr", "#/consignation/effets", "#/consignation/accident", "#/infos"]:
+        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/fluidique", "#/fluidique/double-effet", "#/fluidique/hydraulique", "#/depannage", "#/depannage/s3", "#/chronogrammes", "#/chronogrammes/3", "#/depannage/n/7", "#/depannage/corrige", "#/consignation", "#/consignation/guidee", "#/consignation/erreurs", "#/consignation/roles", "#/consignation/fluides", "#/consignation/presse-guidee", "#/consignation/ddr", "#/consignation/effets", "#/consignation/accident", "#/infos"]:
             await pg.goto(BASE + route); await pg.wait_for_timeout(300)
             deborde = await pg.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
             verifie(not deborde, f"pas de défilement horizontal sur {route}")

@@ -14,6 +14,7 @@ function liste(main){
       <p class="lead">Choisis un schéma, puis manœuvre les appareils. Les conducteurs sous tension passent en rouge, le 0 V et le neutre en bleu.</p>
     </div></div>
     <a class="bts-bandeau bts-seul" href="#/machines"><span class="pill bts-pill">BTS MS</span><span><b>Machines : le moteur asynchrone</b><br><small>Plaque signalétique, calculs, et démarrages comparés en chiffres : direct, étoile-triangle, démarreur progressif, variateur.</small></span><span class="ouvrir">Ouvrir →</span></a>
+    <a class="cg-bandeau" href="#/chronogrammes"><span class="pill">Nouveau</span><span><b>Chronogrammes</b><br><small>Les actions sur les boutons sont données : trace l'état des contacteurs, des voyants et du moteur, puis compare avec la simulation.</small></span><span class="ouvrir">Tracer →</span></a>
     <div class="cartes" id="cartes"></div>`;
   const zone=main.querySelector("#cartes");
   schemas().forEach(s=>{
@@ -95,6 +96,7 @@ function ouvrir(main,id){
       <div class="folios-zone">
         ${multi?`<div class="segment" role="group" aria-label="Folios affichés"><button type="button" data-vue="tous" aria-pressed="true">Les deux</button>${sch.folios.map((f,i)=>`<button type="button" data-vue="${i}" aria-pressed="false">${esc(f.titre)}</button>`).join("")}</div>`:""}
         <div class="folios" id="folios"></div>
+        <section class="bloc" aria-label="Chronogramme"><h2>Chronogramme en direct</h2><div id="chrono"></div></section>
       </div>
       <div class="panneau">
         <section class="bloc" aria-label="Pupitre">
@@ -234,7 +236,8 @@ function ouvrir(main,id){
     if(sim.echeance!=null&&!timer)timer=setInterval(()=>{if(detruit)return;sim.resoudre();rendre();if(sim.echeance==null){clearInterval(timer);timer=null;}},100);
   }
   rendre();
-  return ()=>{detruit=true;if(timer)clearInterval(timer);};
+  const stopChrono=window.ElecChrono?window.ElecChrono.enregistreur(main.querySelector("#chrono"),sim,sch):()=>{};
+  return ()=>{detruit=true;if(timer)clearInterval(timer);stopChrono();};
 }
 
 window.ElecAtelier={liste,ouvrir,peindre};

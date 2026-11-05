@@ -4,7 +4,7 @@ Simulateurs de schémas électriques pour les apprentis du **Bac Pro TIIN** — 
 
 Application statique, installable sur tablette et utilisable hors connexion, sur le même principe que Nucléa TIIN et Sûreté & Cycle TIIN : HTML, CSS et JavaScript natifs, sans framework, sans compte, sans serveur, sans aucune note ni historique.
 
-## Contenu de la version 1.11
+## Contenu de la version 1.12
 
 **Atelier** — trois simulateurs :
 - Démarrage direct un sens (disjoncteur-moteur, transformateur 400 V / 24 V, sectionneur général cadenassable) ;
@@ -33,6 +33,8 @@ Dans chaque simulateur : les fils sous tension passent en rouge, le neutre et le
 - *les effets du courant* : I = U / R selon la tension touchée et l'état de la peau, placé sur une échelle des seuils (perception, non-lâcher, paralysie respiratoire, fibrillation, arrêt cardiaque), avec la tension limite UL ;
 - *accident électrique* : deux situations (arrêt cardiaque ; victime consciente brûlée) à résoudre en choisissant les gestes dans l'ordre Protéger, Examiner, Faire alerter, Secourir (référentiel SST, INRS ED 7000). Toucher la victime avant de couper provoque un sur-accident ; les autres erreurs sont expliquées et listées au bilan.
 
+**Chronogrammes** — dans chaque simulateur de l'Atelier, un enregistreur trace en direct les 20 dernières secondes (boutons, relais thermique, contacteurs, contacts temporisés, voyants, moteur). Huit exercices (accès par le bandeau de l'Atelier) : les actions sur les boutons sont données, l'apprenti trace les sorties case par case (0,5 s), puis la simulation rejoue le scénario en temps virtuel et corrige case par case, avec un « à retenir ». Quatre exercices Bac Pro (auto-maintien, arrêt prioritaire, verrouillage des deux sens, surcharge et voyants) et quatre exercices BTS visibles en mode BTS (étoile-triangle et temporisation, arrêt pendant l'étoile, surcharge en triangle, inversions). Exercices décrits dans `js/chronogrammes.js`.
+
 **Mode BTS** — le bouton « BTS » de la barre du haut affiche les contenus de niveau BTS MS (choix mémorisé sur l'appareil) :
 - *Machines, plaque signalétique* : trois moteurs, réseau 230 V ou 400 V ; l'étudiant détermine le couplage et la possibilité d'un démarrage étoile-triangle, puis calcule vitesse de synchronisme, glissement, courant de ligne, puissance absorbée, rendement, couple utile et courant de démarrage ; chaque réponse est vérifiée (tolérance 2 %) et corrigée ;
 - *Machines, démarrages comparés* : courbes couple-vitesse du moteur et de la charge (pompe ou convoyeur, couple et inertie réglables), simulation du démarrage (vitesse et courant en fonction du temps) en direct, étoile-triangle (temporisation réglable), démarreur progressif (limitation de courant) et variateur (rampe), bilan chiffré et tableau comparatif des quatre procédés. Les courbes sont des courbes types interpolées à partir des valeurs catalogue.
@@ -56,6 +58,7 @@ elec-tiin/
 │   ├── export.js            export SVG / PNG autonome des schémas et des symboles
 │   ├── moteur.js            simulation « tout ou rien » (équipotentielles, contacteurs, temporisations)
 │   ├── atelier.js           liste des schémas et simulateur
+│   ├── chronogrammes.js     enregistreur en direct et exercices de chronogrammes
 │   ├── symboles-data.js     contenu de l'imagier
 │   ├── symboles.js          imagier et jeu
 │   ├── defis-data.js        niveaux, emplacements et pièces des Défis
@@ -76,7 +79,7 @@ elec-tiin/
 ├── assets/                  police Lexend (licence OFL), logo du lycée et logo du Bac Pro TIIN
 ├── icons/                   icônes de l'application installée
 ├── tools/version.py         met à jour le numéro de cache avant publication
-└── tests/test_app.py        154 vérifications dans un vrai navigateur
+└── tests/test_app.py        160 vérifications dans un vrai navigateur
 ```
 
 ## Publier sur GitHub Pages
