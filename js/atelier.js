@@ -15,6 +15,7 @@ function liste(main){
     </div></div>
     <a class="bts-bandeau bts-seul" href="#/machines"><span class="pill bts-pill">BTS MS</span><span><b>Machines : le moteur asynchrone</b><br><small>Plaque signalétique, calculs, et démarrages comparés en chiffres : direct, étoile-triangle, démarreur progressif, variateur.</small></span><span class="ouvrir">Ouvrir →</span></a>
     <a class="cg-bandeau" href="#/chronogrammes"><span class="pill">Nouveau</span><span><b>Chronogrammes</b><br><small>Les actions sur les boutons sont données : trace l'état des contacteurs, des voyants et du moteur, puis compare avec la simulation.</small></span><span class="ouvrir">Tracer →</span></a>
+    <a class="cg-bandeau" href="#/capteurs"><span class="pill">Nouveau</span><span><b>Capteurs</b><br><small>Câbler un détecteur PNP, NPN ou 2 fils vers un automate ou un relais, choisir le bon capteur, fiche comparative.</small></span><span class="ouvrir">Ouvrir →</span></a>
     <div class="cartes" id="cartes"></div>`;
   const zone=main.querySelector("#cartes");
   schemas().forEach(s=>{

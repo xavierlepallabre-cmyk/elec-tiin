@@ -324,6 +324,24 @@ async def main():
         d = await pg.locator("#chrono path.cg-trace").nth(2).get_attribute("d")
         verifie(d and d.count("L") >= 2, "Atelier : l'enregistreur trace le chronogramme en direct")
 
+        print("Capteurs")
+        await pg.goto(BASE + "#/capteurs/cablage"); await pg.wait_for_timeout(300)
+        await pg.select_option('[data-f="marron"]', "P"); await pg.select_option('[data-f="bleu"]', "M"); await pg.select_option('[data-f="noir"]', "S")
+        await pg.locator("#dist").fill("5"); await pg.locator("#dist").dispatch_event("input")
+        verifie("à 1" in await etat(pg) and "correct" in (await pg.inner_text("#bilan")).lower(), "capteurs : PNP sur entrée en logique positive, I0.0 à 1")
+        await pg.select_option("#det", "ind-npn")
+        verifie("à 0" in await etat(pg) and "logique positive" in (await pg.inner_text("#bilan")).lower(), "capteurs : NPN sur entrée en logique positive, sans effet et expliqué")
+        await pg.select_option("#com", "P")
+        verifie("à 1" in await etat(pg), "capteurs : NPN sur entrée en logique négative, I0.0 à 1")
+        await pg.select_option("#mat", "plastique")
+        verifie("à 0" in await etat(pg) and "métaux" in (await pg.inner_text("#portee")).lower(), "capteurs : l'inductif ne détecte pas le plastique")
+        await pg.select_option("#det", "ind-2f"); await pg.select_option("#mat", "acier")
+        await pg.select_option('[data-f="marron"]', "P"); await pg.select_option('[data-f="bleu"]', "M")
+        verifie("détruit" in await etat(pg), "capteurs : 2 fils branché sans charge, détecteur détruit")
+        await pg.goto(BASE + "#/capteurs/choix"); await pg.wait_for_timeout(300)
+        await pg.locator(".choix button").first.click()
+        verifie(await pg.locator(".choix button.juste").count() >= 1 and await pg.locator(".retour-jeu").is_visible(), "capteurs : le jeu corrige et explique")
+
         print("Dépannage")
         async def borne(lab):
             await pg.locator(f'circle.mm-pt[aria-label*="{lab}"]').first.click(); await pg.wait_for_timeout(60)
@@ -467,7 +485,7 @@ async def main():
 
         print("Largeur téléphone (360 px)")
         await pg.set_viewport_size({"width": 360, "height": 780})
-        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/fluidique", "#/fluidique/double-effet", "#/fluidique/hydraulique", "#/depannage", "#/depannage/s3", "#/chronogrammes", "#/chronogrammes/3", "#/depannage/n/7", "#/depannage/corrige", "#/consignation", "#/consignation/guidee", "#/consignation/erreurs", "#/consignation/roles", "#/consignation/fluides", "#/consignation/presse-guidee", "#/consignation/ddr", "#/consignation/effets", "#/consignation/accident", "#/infos"]:
+        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/fluidique", "#/fluidique/double-effet", "#/fluidique/hydraulique", "#/depannage", "#/depannage/s3", "#/chronogrammes", "#/chronogrammes/3", "#/capteurs", "#/capteurs/cablage", "#/capteurs/choix", "#/capteurs/fiche", "#/depannage/n/7", "#/depannage/corrige", "#/consignation", "#/consignation/guidee", "#/consignation/erreurs", "#/consignation/roles", "#/consignation/fluides", "#/consignation/presse-guidee", "#/consignation/ddr", "#/consignation/effets", "#/consignation/accident", "#/infos"]:
             await pg.goto(BASE + route); await pg.wait_for_timeout(300)
             deborde = await pg.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
             verifie(not deborde, f"pas de défilement horizontal sur {route}")
