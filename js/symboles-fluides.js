@@ -340,6 +340,7 @@ function imagier(main){
     <div class="sy-outils"><label class="option export-nb"><input type="checkbox" id="expNoir"> Exporter en noir et blanc (photocopie)</label>
       <button type="button" class="btn" id="imprimer">Imprimer l'aide-mémoire affiché</button></div>
     <div class="imagier" id="imagier"></div>
+    <section id="lotSym" style="margin-top:16px"></section>
     <p class="astuce" style="margin-top:14px">Dessins réalisés d'après l'ISO 1219-1 ; quelques symboles d'appareils de conditionnement (sécheurs, démarreur progressif) sont simplifiés. Le numéro « n° » renvoie à la liste de production des supports du cours.</p>`;
   const zone=main.querySelector("#imagier");
   function remplir(){
@@ -371,6 +372,10 @@ function imagier(main){
   main.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{cat=b.dataset.cat;main.querySelectorAll("[data-cat]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));remplir();});
   main.querySelectorAll("[data-corp]").forEach(b=>b.onclick=()=>{corp=b.dataset.corp;main.querySelectorAll("[data-corp]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));remplir();});
   main.querySelector("#imprimer").onclick=()=>window.print();
+  const X=window.ElecExport;
+  X.barreLot(main.querySelector("#lotSym"),{titre:"Tout télécharger",texte:"Tous les symboles affichés (selon les filtres), dans une archive ZIP : un fichier par symbole, nommé avec son numéro de liste.",nom:"symboles-fluidiques",
+    items:noir=>SYM.filter(s=>cat!=="planches"&&(cat==="tous"||s.cat===cat)&&(corp==="tous"||s.corpus===corp||s.corpus==="Commun")).map(s=>({nom:"fluide-"+String(s.n).padStart(3,"0")+"-"+X.slug(s.nom)+(noir?"-nb":""),opt:{noir,titre:s.nom,description:"Symbole ISO 1219-1"},
+      source:()=>{const box=document.createElement("div");box.style.cssText="position:fixed;left:-10000px;top:0;width:400px";const svg=dessiner(s);box.appendChild(svg);document.body.appendChild(box);return {svg,fin:()=>box.remove()};}}))});
   remplir();
   return ()=>{};
 }

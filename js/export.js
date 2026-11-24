@@ -130,14 +130,67 @@ function svgAutonome(svgVivant,opt){
   });
 }
 
-/* ---------- téléchargements ---------- */
-function telecharger(blob,nom){
+/* ---------- téléchargements ----------
+   Dans l'application (navigateur, tablette) : lien de téléchargement classique.
+   Dans l'aperçu claude.ai, la page tourne dans un cadre protégé : on passe par la capacité « downloads ». */
+let dl=null;
+try{if(window.claude&&typeof window.claude.use==="function")dl=window.claude.use("downloads").catch(()=>null);}catch(e){dl=null;}
+async function telecharger(blob,nom){
+  const d=dl?await dl:null;
+  if(d){
+    try{await d.save({filename:nom,data:blob});return true;}
+    catch(e){if(e&&e.code==="declined")return false;throw e;}
+  }
   const url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download=nom;a.rel="noopener";
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),4000);
+  return true;
 }
-function telechargerSVG(texte,nom){telecharger(new Blob([texte],{type:"image/svg+xml;charset=utf-8"}),nom+".svg");}
+function telechargerSVG(texte,nom){return telecharger(new Blob([texte],{type:"image/svg+xml;charset=utf-8"}),nom+".svg");}
+
+/* ---------- archive ZIP (sans compression) ---------- */
+const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(u){let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRC[(c^u[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function zip(fichiers){ // [{nom, data: Uint8Array | string}]
+  const enc=new TextEncoder(),parts=[],centre=[];let off=0;
+  const j=new Date(),date=((j.getFullYear()-1980)<<9)|((j.getMonth()+1)<<5)|j.getDate(),heure=(j.getHours()<<11)|(j.getMinutes()<<5);
+  fichiers.forEach(f=>{
+    const nom=enc.encode(f.nom),data=typeof f.data==="string"?enc.encode(f.data):f.data,crc=crc32(data);
+    const h=new DataView(new ArrayBuffer(30));
+    h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint16(8,0,true);h.setUint16(10,heure,true);h.setUint16(12,date,true);
+    h.setUint32(14,crc,true);h.setUint32(18,data.length,true);h.setUint32(22,data.length,true);h.setUint16(26,nom.length,true);h.setUint16(28,0,true);
+    parts.push(h.buffer,nom,data);
+    const c=new DataView(new ArrayBuffer(46));
+    c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint16(10,0,true);c.setUint16(12,heure,true);c.setUint16(14,date,true);
+    c.setUint32(16,crc,true);c.setUint32(20,data.length,true);c.setUint32(24,data.length,true);c.setUint16(28,nom.length,true);
+    c.setUint32(42,off,true);
+    centre.push(c.buffer,nom);
+    off+=30+nom.length+data.length;
+  });
+  const taille=centre.reduce((s,b)=>s+(b.byteLength!==undefined?b.byteLength:b.length),0);
+  const e=new DataView(new ArrayBuffer(22));
+  e.setUint32(0,0x06054b50,true);e.setUint16(8,fichiers.length,true);e.setUint16(10,fichiers.length,true);e.setUint32(12,taille,true);e.setUint32(16,off,true);
+  return new Blob([...parts,...centre,e.buffer],{type:"application/zip"});
+}
+/* Exporte une série de dessins dans une archive : items = [{nom, source: ()=>{svg, fin?}, opt}] ; format svg ou png. */
+async function exporterLot(items,format,nomArchive,btn,progres){
+  if(btn)btn.disabled=true;
+  try{
+    const fichiers=[];
+    for(let i=0;i<items.length;i++){
+      const it=items[i],s=it.source();
+      try{
+        if(format==="png")fichiers.push({nom:it.nom+".png",data:new Uint8Array(await (await pngDepuis(s.svg,it.opt||{})).arrayBuffer())});
+        else fichiers.push({nom:it.nom+".svg",data:svgAutonome(s.svg,it.opt||{})});
+      }finally{if(s.fin)s.fin();}
+      if(progres)progres(i+1,items.length);
+    }
+    fichiers.push({nom:"LICENCE.txt",data:"Élec TIIN — Conception originale : Xavier Le Pallabre.\n© 2026 Xavier Le Pallabre — Attribution de l'auteur original à conserver lors des réutilisations et adaptations.\nLicence CC BY-NC-SA 4.0 : https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr\n"});
+    return await telecharger(zip(fichiers),nomArchive+".zip");
+  }catch(e){console.error(e);return false;}
+  finally{if(btn)btn.disabled=false;}
+}
 
 /* Police Lexend embarquée pour le rendu PNG (une image SVG ne voit pas les polices de la page). */
 let policeB64=null;
@@ -171,7 +224,7 @@ async function pngDepuis(svgVivant,opt){
     return await new Promise(ok=>cv.toBlob(ok,"image/png"));
   }finally{URL.revokeObjectURL(url);}
 }
-async function telechargerPNG(svgVivant,nom,opt){telecharger(await pngDepuis(svgVivant,opt||{}),nom+".png");}
+async function telechargerPNG(svgVivant,nom,opt){return telecharger(await pngDepuis(svgVivant,opt||{}),nom+".png");}
 
 /* Construit un SVG hors écran (attaché au document pour que la feuille de style s'applique). */
 function horsEcran(construire){
@@ -191,9 +244,8 @@ async function exporter(source,format,nom,opt,btn){
   const s=source();
   if(btn)btn.disabled=true;
   try{
-    if(format==="png")await telechargerPNG(s.svg,nom,opt);
-    else telechargerSVG(svgAutonome(s.svg,opt),nom);
-    return true;
+    if(format==="png")return await telechargerPNG(s.svg,nom,opt);
+    return await telechargerSVG(svgAutonome(s.svg,opt),nom);
   }catch(e){
     console.error(e);
     return false;
@@ -203,5 +255,21 @@ async function exporter(source,format,nom,opt,btn){
   }
 }
 
-window.ElecExport={svgAutonome,pngDepuis,telechargerSVG,telechargerPNG,horsEcran,exporter,slug,ECHELLE};
+/* Barre « Tout télécharger » : cfg = {titre, texte, nom, items: noir => [{nom, source, opt}]} */
+function barreLot(zone,cfg){
+  zone.classList.add("bloc","lot");
+  zone.innerHTML=`<h2>${cfg.titre}</h2><p class="astuce">${cfg.texte}</p>
+    <label class="option"><input type="checkbox" class="lot-noir"> Noir et blanc (photocopie)</label>
+    <div class="actions"><button type="button" class="btn" data-lot="svg">ZIP de SVG</button><button type="button" class="btn" data-lot="png">ZIP de PNG 300 ppp</button></div>
+    <p class="astuce lot-msg" aria-live="polite"></p>`;
+  const msg=zone.querySelector(".lot-msg");
+  zone.querySelectorAll("[data-lot]").forEach(b=>b.addEventListener("click",async()=>{
+    const noir=zone.querySelector(".lot-noir").checked,items=cfg.items(noir),fmt=b.dataset.lot;
+    const nom=cfg.nom+"-"+fmt+(noir?"-nb":"");
+    msg.textContent="Préparation…";
+    const ok=await exporterLot(items,fmt,nom,b,(i,n)=>{msg.textContent=`Préparation : ${i} sur ${n}…`;});
+    msg.textContent=ok?`Archive ${nom}.zip prête (${items.length} fichiers).`:"Le téléchargement n'a pas abouti. Réessaie, ou essaie l'autre format.";
+  }));
+}
+window.ElecExport={barreLot,svgAutonome,pngDepuis,telechargerSVG,telechargerPNG,horsEcran,exporter,exporterLot,zip,slug,ECHELLE};
 })();

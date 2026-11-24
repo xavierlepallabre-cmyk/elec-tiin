@@ -645,7 +645,8 @@ footer .credit{margin:8px auto 0;max-width:72ch;font-size:11.5px;line-height:1.5
 .exp-sym{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}
 .exp-sym span{font-size:12px;color:var(--muted);margin-right:auto}
 .exp-sym .btn{padding:5px 10px;font-size:12px}
-@media print{.exporter,.exp-sym,.export-nb{display:none!important}}
+@media print{.exporter,.exp-sym,.export-nb,.lot{display:none!important}}
+.lot .actions .btn{flex:none}
 .fiche .txt:has(.exp-sym){flex:1;display:flex;flex-direction:column}
 .fiche .exp-sym{margin-top:auto;padding-top:4px}
 @media (max-width:1440px){.tabs{gap:2px}.tabs a{padding:8px 9px;gap:6px}.niveau-btn{padding:0 10px}.topbar-inner{column-gap:10px}}

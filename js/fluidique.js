@@ -15,8 +15,12 @@ function liste(main){
       <h1>Pneumatique et hydraulique</h1>
       <p class="lead">Manœuvre les distributeurs et règle les composants. Les conduites sous pression passent en bleu, la tige du vérin suit. Symboles ISO 1219-1, repérage des orifices ISO 5599.</p>
     </div></div>
-    <div class="cartes" id="cartes"></div>`;
+    <div class="cartes" id="cartes"></div>
+    <section id="lotFl" style="margin-top:16px"></section>`;
   const z=main.querySelector("#cartes");
+  {const X=window.ElecExport;
+   X.barreLot(main.querySelector("#lotFl"),{titre:"Télécharger tous les schémas",texte:"Les schémas des circuits de fluidique au repos, dans une archive ZIP.",nom:"schemas-fluidiques",
+    items:noir=>circuits().map(c=>({nom:"fluidique-"+c.id+"-repos"+(noir?"-nb":""),opt:{noir,titre:c.titre,description:"Schéma au repos, ISO 1219-1"},source:()=>reposFl(c)}))});}
   circuits().forEach(c=>{
     const a=document.createElement("a");a.className="carte";a.href="#/fluidique/"+c.id;
     a.innerHTML=`<div class="apercu"></div><div class="corps"><span class="chip" style="justify-self:start">${c.type==="pneu"?"Pneumatique":"Hydraulique"}</span><h2>${esc(c.titre)}</h2><p class="lead" style="margin:0">${esc(c.resume)}</p>
@@ -29,6 +33,8 @@ function liste(main){
   return ()=>{};
 }
 
+/* schéma au repos, construit hors écran pour l'export */
+function reposFl(c){return window.ElecExport.horsEcran(svg=>{const P=new (F().Planche)(svg,c.vue[0],c.vue[1]);c.dessin(P);Object.keys(P.verins).forEach(id=>P.placerVerin(id,0,"transparent","transparent"));});}
 function ouvrir(main,id){
   const c=circuits().find(x=>x.id===id);
   if(!c){main.innerHTML=`<p class="lead">Ce circuit n'existe pas. <a href="#/fluidique">Retour</a></p>`;return ()=>{};}
@@ -48,12 +54,28 @@ function ouvrir(main,id){
         <section class="bloc" aria-label="Commandes"><h2>Commandes</h2><div class="actions-col" id="cmd"></div></section>
         ${(c.reglages||[]).length||(c.options||[]).length?`<section class="bloc" aria-label="Réglages"><h2>Réglages</h2><div class="actions-col" id="regl"></div></section>`:""}
         <section class="bloc" aria-label="Ce qui se passe"><h2>Ce qui se passe</h2><ul class="explications" id="expl" aria-live="polite"></ul></section>
+        <section class="bloc exporter" aria-label="Exporter le schéma">
+          <h2>Exporter le schéma</h2>
+          <fieldset class="exp-etat"><legend class="sr-only">État exporté</legend>
+            <label class="option"><input type="radio" name="expEtat" value="repos" checked> Au repos (schéma normalisé)</label>
+            <label class="option"><input type="radio" name="expEtat" value="affiche"> État affiché à l'écran</label>
+          </fieldset>
+          <label class="option"><input type="checkbox" id="expNoir"> Noir et blanc (photocopie)</label>
+          <div class="actions"><button type="button" class="btn" data-fmt="svg">SVG</button><button type="button" class="btn" data-fmt="png">PNG 300 ppp</button></div>
+          <p class="astuce" id="expMsg" aria-live="polite">SVG : vectoriel, pour le cours (LaTeX, traitement de texte). PNG : image pour Éléa ou un diaporama.</p>
+        </section>
       </div>
     </div>`;
   const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("role","img");svg.setAttribute("aria-label","Schéma "+c.titre);
   main.querySelector("#planche").appendChild(svg);
   P=new (F().Planche)(svg,c.vue[0],c.vue[1]);c.dessin(P);
   Object.entries(P.distrib).forEach(([k,D])=>st.pos[k]=D.d.ref);
+  main.querySelectorAll(".exporter [data-fmt]").forEach(b=>b.addEventListener("click",async()=>{
+    const X=window.ElecExport,repos=main.querySelector('input[name="expEtat"]:checked').value==="repos",noir=main.querySelector("#expNoir").checked;
+    const nom=["fluidique",c.id,repos?"repos":"etat",noir?"nb":""].filter(Boolean).join("-");
+    const ok=await X.exporter(repos?()=>reposFl(c):()=>({svg}),b.dataset.fmt,nom,{noir,titre:c.titre,description:repos?"Schéma au repos, ISO 1219-1":"État simulé"},b);
+    main.querySelector("#expMsg").textContent=ok?`Fichier ${nom}.${b.dataset.fmt} enregistré dans les téléchargements.`:"L'export n'a pas abouti sur cet appareil. Essaie l'autre format.";
+  }));
   (c.verins||[]).forEach(v=>st.t[v.id]=0);
 
   /* ---------- commandes ---------- */

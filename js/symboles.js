@@ -25,7 +25,8 @@ function imagier(main){
     ${window.ElecSymbolesFluides?window.ElecSymbolesFluides.onglets("elec"):""}
     <div class="filtres" role="group" aria-label="Familles de symboles">${cats.map(c=>`<button type="button" data-c="${c.id}" aria-pressed="${c.id==="tous"}">${esc(c.nom)}</button>`).join("")}</div>
     <label class="option export-nb"><input type="checkbox" id="expNoir"> Exporter en noir et blanc (photocopie)</label>
-    <div class="imagier" id="imagier"></div>`;
+    <div class="imagier" id="imagier"></div>
+    <section id="lotSym" style="margin-top:16px"></section>`;
   const zone=main.querySelector("#imagier");
   function remplir(){
     zone.innerHTML="";
@@ -45,6 +46,9 @@ function imagier(main){
       zone.appendChild(a);
     });
   }
+  window.ElecExport.barreLot(main.querySelector("#lotSym"),{titre:"Tout télécharger",texte:"Tous les symboles de la famille affichée, dans une archive ZIP : un fichier par symbole, contacts au repos.",nom:"symboles-electriques",
+    items:noir=>window.ELEC_SYMBOLES.filter(s=>filtre==="tous"||s.cat===filtre).map(s=>({nom:"symbole-"+window.ElecExport.slug(s.nom)+(noir?"-nb":""),opt:{noir,titre:s.nom,description:"Symbole, contacts au repos"},
+      source:()=>window.ElecExport.horsEcran(svg=>{svg.setAttribute("role","img");const F=D.construire(svg,s.f);Object.values(F.contacts).forEach(c=>c.maj(c.spec.mode==="nf","var(--mort)"));})}))});
   main.querySelectorAll(".filtres button").forEach(b=>b.addEventListener("click",()=>{
     filtre=b.dataset.c;main.querySelectorAll(".filtres button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));remplir();
   }));

@@ -16,8 +16,13 @@ function liste(main){
     <a class="bts-bandeau bts-seul" href="#/machines"><span class="pill bts-pill">BTS MS</span><span><b>Machines : le moteur asynchrone</b><br><small>Plaque signalétique, calculs, et démarrages comparés en chiffres : direct, étoile-triangle, démarreur progressif, variateur.</small></span><span class="ouvrir">Ouvrir →</span></a>
     <a class="cg-bandeau" href="#/chronogrammes"><span class="pill">Nouveau</span><span><b>Chronogrammes</b><br><small>Les actions sur les boutons sont données : trace l'état des contacteurs, des voyants et du moteur, puis compare avec la simulation.</small></span><span class="ouvrir">Tracer →</span></a>
     <a class="cg-bandeau" href="#/capteurs"><span class="pill">Nouveau</span><span><b>Capteurs</b><br><small>Câbler un détecteur PNP, NPN ou 2 fils vers un automate ou un relais, choisir le bon capteur, fiche comparative.</small></span><span class="ouvrir">Ouvrir →</span></a>
-    <div class="cartes" id="cartes"></div>`;
+    <div class="cartes" id="cartes"></div>
+    <section id="lotSch" style="margin-top:16px"></section>`;
   const zone=main.querySelector("#cartes");
+  {const X=window.ElecExport,D=window.ElecDessin;
+   X.barreLot(main.querySelector("#lotSch"),{titre:"Télécharger tous les schémas",texte:"Tous les folios des schémas de l'Atelier, au repos (schéma normalisé), dans une archive ZIP. Échelle 1:1.",nom:"schemas-electriques",
+    items:noir=>schemas().flatMap(s=>s.folios.map(f=>({nom:[s.id,s.folios.length>1?X.slug(f.titre):"","repos",noir?"nb":""].filter(Boolean).join("-"),opt:{noir,titre:s.titre+" — "+f.titre,description:"Contacts au repos"},
+      source:()=>X.horsEcran(svg=>{const F=D.construire(svg,f);Object.values(F.contacts).forEach(c=>c.maj(c.spec.mode==="nf"||c.spec.mode==="tnf","var(--mort)"));})})))});}
   schemas().forEach(s=>{
     const a=document.createElement("a");
     a.className="carte";a.href="#/atelier/"+s.id;

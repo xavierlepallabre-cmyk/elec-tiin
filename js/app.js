@@ -1,7 +1,7 @@
 /* Élec TIIN — navigation, thème, état réseau, mises à jour. */
 (function(){
 "use strict";
-const VERSION="1.14.0";
+const VERSION="1.15.0";
 const main=document.getElementById("main");
 let quitter=()=>{};
 

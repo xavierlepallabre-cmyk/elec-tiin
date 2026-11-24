@@ -33,7 +33,7 @@ async def capture(pg, nom):
 async def main():
     async with async_playwright() as p:
         nav = await p.chromium.launch()
-        pg = await nav.new_page(viewport={"width": 1280, "height": 860})
+        pg = await nav.new_page(viewport={"width": 1280, "height": 860}, accept_downloads=True)
         erreurs = []
         pg.on("pageerror", lambda e: erreurs.append(str(e)))
         pg.on("console", lambda m: erreurs.append(m.text) if m.type == "error" else None)
@@ -355,6 +355,20 @@ async def main():
         verifie(await pg.locator(".choix button.juste").count() == 1 and await pg.locator(".question svg").count() == 1, "fluidique : le jeu corrige")
         await pg.goto(BASE + "#/symboles"); await pg.wait_for_timeout(300)
         verifie(await pg.locator('.sy-onglets a[href="#/symboles/fluides"]').count() == 1, "symboles : onglets électriques / fluidiques")
+
+        print("Téléchargements groupés")
+        await pg.goto(BASE + "#/symboles/fluides"); await pg.wait_for_timeout(300)
+        await pg.click('[data-cat="debit"]')
+        async with pg.expect_download() as tel:
+            await pg.locator('.lot [data-lot="svg"]').click()
+        fichier = await (await tel.value).path()
+        import zipfile
+        noms = zipfile.ZipFile(fichier).namelist()
+        verifie(len(noms) == 6 and noms[0].startswith("fluide-089") and "LICENCE.txt" in noms, "ZIP des symboles de fluidique filtrés, avec licence")
+        await pg.goto(BASE + "#/fluidique/double-effet"); await pg.wait_for_timeout(300)
+        async with pg.expect_download() as tel:
+            await pg.locator('.exporter [data-fmt="svg"]').click()
+        verifie((await tel.value).suggested_filename == "fluidique-double-effet-repos.svg", "export SVG d'un schéma de fluidique au repos")
 
         print("Dépannage")
         async def borne(lab):
