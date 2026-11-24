@@ -4,7 +4,7 @@ Simulateurs de schémas électriques pour les apprentis du **Bac Pro TIIN** — 
 
 Application statique, installable sur tablette et utilisable hors connexion, sur le même principe que Nucléa TIIN et Sûreté & Cycle TIIN : HTML, CSS et JavaScript natifs, sans framework, sans compte, sans serveur, sans aucune note ni historique.
 
-## Contenu de la version 1.13
+## Contenu de la version 1.14
 
 **Atelier** — trois simulateurs :
 - Démarrage direct un sens (disjoncteur-moteur, transformateur 400 V / 24 V, sectionneur général cadenassable) ;
@@ -47,6 +47,8 @@ Dans chaque simulateur : les fils sous tension passent en rouge, le neutre et le
 
 **Symboles** — imagier de 23 symboles IEC 60617 (lettre repère, bornes, fonction) et jeu de reconnaissance par séries de dix questions, sans enregistrement du résultat.
 
+**Symboles de fluidique** — onglet « Fluidiques » de la page Symboles : 113 symboles ISO 1219-1 (base, production et conditionnement de l'air et de l'huile, mesure, distributeurs et centres, commandes, clapets, valves de pression et de débit, actionneurs, capteurs sur vérin, vannes de consignation) avec leur fonction, filtres par énergie (pneumatique, hydraulique) et par catégorie, et quatre planches de repérage (orifices ISO 5599, orifices hydrauliques, composants ISO 1219-2, correspondance pneumatique-hydraulique). Chaque symbole s'exporte en SVG ou PNG (option noir et blanc) pour les cours ; « Imprimer l'aide-mémoire affiché » sort la sélection en planche compacte. Jeu de reconnaissance par séries de dix. Le « n° » de chaque fiche renvoie à la liste de production des supports du cours.
+
 **Export (v1.9)** — chaque folio de l'Atelier et chaque symbole de l'imagier s'exporte en fichier autonome :
 - *SVG* vectoriel, pour un cours LaTeX (via `\includesvg` ou après conversion en PDF avec Inkscape), un traitement de texte ou Éléa ; *PNG* à 300 ppp avec la police Lexend incorporée ;
 - *au repos* (schéma normalisé, contacts en position de repos) ou *dans l'état affiché* par la simulation (fils sous tension en couleur) ;
@@ -67,6 +69,7 @@ elec-tiin/
 │   ├── capteurs.js          câblage des détecteurs, choix du capteur, fiche
 │   ├── symboles-data.js     contenu de l'imagier
 │   ├── symboles.js          imagier et jeu
+│   ├── symboles-fluides.js  imagier, planches et jeu des symboles de fluidique
 │   ├── defis-data.js        niveaux, emplacements et pièces des Défis
 │   ├── defis.js             schéma à trous et test automatique
 │   ├── fluidique-dessin.js  symboles pneumatiques et hydrauliques (ISO 1219-1)
@@ -85,7 +88,7 @@ elec-tiin/
 ├── assets/                  police Lexend (licence OFL), logo du lycée et logo du Bac Pro TIIN
 ├── icons/                   icônes de l'application installée
 ├── tools/version.py         met à jour le numéro de cache avant publication
-└── tests/test_app.py        170 vérifications dans un vrai navigateur
+└── tests/test_app.py        177 vérifications dans un vrai navigateur
 ```
 
 ## Publier sur GitHub Pages

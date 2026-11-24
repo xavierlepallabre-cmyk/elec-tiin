@@ -342,6 +342,20 @@ async def main():
         await pg.locator(".choix button").first.click()
         verifie(await pg.locator(".choix button.juste").count() >= 1 and await pg.locator(".retour-jeu").is_visible(), "capteurs : le jeu corrige et explique")
 
+        print("Symboles de fluidique")
+        await pg.goto(BASE + "#/symboles/fluides"); await pg.wait_for_timeout(400)
+        verifie(await pg.locator(".imagier .fiche").count() == 117, "fluidique : 113 symboles et 4 planches de repérage")
+        await pg.click('[data-corp="HYD"]'); n_hyd = await pg.locator(".imagier .fiche").count()
+        await pg.click('[data-cat="distrib"]')
+        verifie(0 < await pg.locator(".imagier .fiche").count() < n_hyd and await pg.locator(".imagier .fiche svg").first.is_visible(), "fluidique : filtres par énergie et par catégorie")
+        await pg.click('[data-cat="planches"]')
+        verifie(await pg.locator(".sy-planche").count() == 3, "fluidique : planches de repérage hydrauliques")
+        await pg.goto(BASE + "#/symboles/fluides-jeu"); await pg.wait_for_timeout(300)
+        await pg.locator(".choix button").first.click()
+        verifie(await pg.locator(".choix button.juste").count() == 1 and await pg.locator(".question svg").count() == 1, "fluidique : le jeu corrige")
+        await pg.goto(BASE + "#/symboles"); await pg.wait_for_timeout(300)
+        verifie(await pg.locator('.sy-onglets a[href="#/symboles/fluides"]').count() == 1, "symboles : onglets électriques / fluidiques")
+
         print("Dépannage")
         async def borne(lab):
             await pg.locator(f'circle.mm-pt[aria-label*="{lab}"]').first.click(); await pg.wait_for_timeout(60)
@@ -485,7 +499,7 @@ async def main():
 
         print("Largeur téléphone (360 px)")
         await pg.set_viewport_size({"width": 360, "height": 780})
-        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/fluidique", "#/fluidique/double-effet", "#/fluidique/hydraulique", "#/depannage", "#/depannage/s3", "#/chronogrammes", "#/chronogrammes/3", "#/capteurs", "#/capteurs/cablage", "#/capteurs/choix", "#/capteurs/fiche", "#/depannage/n/7", "#/depannage/corrige", "#/consignation", "#/consignation/guidee", "#/consignation/erreurs", "#/consignation/roles", "#/consignation/fluides", "#/consignation/presse-guidee", "#/consignation/ddr", "#/consignation/effets", "#/consignation/accident", "#/infos"]:
+        for route in ["#/atelier", "#/atelier/direct-un-sens", "#/atelier/deux-sens", "#/atelier/etoile-triangle", "#/symboles", "#/symboles/jeu", "#/defis", "#/defis/2", "#/defis/4", "#/defis/5", "#/fluidique", "#/fluidique/double-effet", "#/fluidique/hydraulique", "#/depannage", "#/depannage/s3", "#/chronogrammes", "#/chronogrammes/3", "#/symboles/fluides", "#/symboles/fluides-jeu", "#/capteurs", "#/capteurs/cablage", "#/capteurs/choix", "#/capteurs/fiche", "#/depannage/n/7", "#/depannage/corrige", "#/consignation", "#/consignation/guidee", "#/consignation/erreurs", "#/consignation/roles", "#/consignation/fluides", "#/consignation/presse-guidee", "#/consignation/ddr", "#/consignation/effets", "#/consignation/accident", "#/infos"]:
             await pg.goto(BASE + route); await pg.wait_for_timeout(300)
             deborde = await pg.evaluate("document.documentElement.scrollWidth > window.innerWidth + 1")
             verifie(not deborde, f"pas de défilement horizontal sur {route}")

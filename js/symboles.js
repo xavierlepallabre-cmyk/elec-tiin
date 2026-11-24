@@ -22,6 +22,7 @@ function imagier(main){
       <h1>Symboles normalisés</h1>
       <p class="lead">Les symboles des schémas de l'Atelier, avec la lettre repère de l'appareil et ses bornes usuelles. Contacts dessinés au repos.</p>
     </div><a class="btn btn-primary" href="#/symboles/jeu">Jouer : reconnaître les symboles</a></div>
+    ${window.ElecSymbolesFluides?window.ElecSymbolesFluides.onglets("elec"):""}
     <div class="filtres" role="group" aria-label="Familles de symboles">${cats.map(c=>`<button type="button" data-c="${c.id}" aria-pressed="${c.id==="tous"}">${esc(c.nom)}</button>`).join("")}</div>
     <label class="option export-nb"><input type="checkbox" id="expNoir"> Exporter en noir et blanc (photocopie)</label>
     <div class="imagier" id="imagier"></div>`;

@@ -1,7 +1,7 @@
 /* Élec TIIN — navigation, thème, état réseau, mises à jour. */
 (function(){
 "use strict";
-const VERSION="1.13.0";
+const VERSION="1.14.0";
 const main=document.getElementById("main");
 let quitter=()=>{};
 
@@ -66,7 +66,7 @@ function route(){
         h[1]==="guidee"||h[1]==="erreurs"?C.scene(main,h[1]):h[1]==="roles"?C.roles(main):h[1]==="fluides"?C.fluides(main):
         h[1]==="ddr"?window.ElecProtection.ddr(main):h[1]==="effets"?window.ElecProtection.effets(main):h[1]==="accident"?window.ElecProtection.accident(main):C.accueil(main);}
     else if(onglet==="defis")quitter=h[1]?window.ElecDefis.ouvrir(main,+h[1]):window.ElecDefis.liste(main);
-    else if(onglet==="symboles")quitter=h[1]==="jeu"?window.ElecSymboles.jeu(main):window.ElecSymboles.imagier(main);
+    else if(onglet==="symboles"){const F=window.ElecSymbolesFluides;quitter=h[1]==="jeu"?window.ElecSymboles.jeu(main):h[1]==="fluides"?F.imagier(main):h[1]==="fluides-jeu"?F.jeu(main):window.ElecSymboles.imagier(main);}
     else if(onglet==="infos")quitter=infos();
     else if(onglet==="capteurs")quitter=window.ElecCapteurs.ouvrir(main,h[1]);
     else if(onglet==="chronogrammes")quitter=h[1]?window.ElecChrono.ouvrir(main,+h[1]):window.ElecChrono.liste(main);
